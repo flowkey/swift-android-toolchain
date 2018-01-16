@@ -40,7 +40,7 @@ case "$COMMAND" in
     "copylibs")
         DESTINATION=${1:-"."}
         echo "Copying Swift libs into $DESTINATION"
-        cp $TOOLCHAIN_PATH/usr/lib/swift/android/lib{curl,dispatch,Foundation,scu*,swiftCore,swiftGlibc,swiftRemoteMirror,swiftSwiftOnoneSupport,xml2}.so $DESTINATION
+        cp $TOOLCHAIN_PATH/usr/lib/swift/android/lib{c++_shared,curl,dispatch,Foundation,scu*,swiftCore,swiftGlibc,swiftRemoteMirror,swiftSwiftOnoneSupport,xml2}.so $DESTINATION
     ;;
     *)
         echo "----------------------------"
