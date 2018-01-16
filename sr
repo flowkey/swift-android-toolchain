@@ -1,0 +1,52 @@
+#!/bin/sh
+
+unset -v CDPATH
+TOOLCHAIN_PATH=$(dirname "`which $0`")
+SCRIPT_NAME=$(basename $0)
+
+TARGET="armv7-none-linux-androideabi"
+
+
+# Sets the PATH for the swift / swiftc commands below!
+# This in itself performs most of this script's magic..
+export PATH="$TOOLCHAIN_PATH/usr/bin:$TOOLCHAIN_PATH/usr/Darwin:$PATH"
+
+COMMAND="$1"; shift;
+case "$COMMAND" in
+    "shell")
+        echo "$SCRIPT_NAME no longer runs in a docker image so '$SCRIPT_NAME shell' is unneeded!"
+        exit 1
+    ;;
+    "swift")
+        swift $@
+    ;;
+    "swiftc")
+        swiftc \
+            -target $TARGET \
+            -tools-directory $TOOLCHAIN_PATH/usr/bin \
+            -sdk $TOOLCHAIN_PATH/ndk-android-21 \
+            -L$TOOLCHAIN_PATH/usr/Darwin \
+            -L$TOOLCHAIN_PATH/ndk-android-21/usr/lib \
+            -Xcc -fPIC \
+            $@
+    ;;
+    "build")
+        swift build \
+            --destination $TOOLCHAIN_PATH/$TARGET.json \
+            -Xlinker -L$TOOLCHAIN_PATH/usr/Darwin \
+            -Xlinker -L$TOOLCHAIN_PATH/usr/Darwin/libatomic.a \
+            $@
+    ;;
+    "copylibs")
+        DESTINATION=${1:-"."}
+        echo "Copying Swift libs into $DESTINATION"
+        cp $TOOLCHAIN_PATH/usr/lib/swift/android/lib{curl,dispatch,Foundation,scu*,swiftCore,swiftGlibc,swiftRemoteMirror,swiftSwiftOnoneSupport,xml2}.so $DESTINATION
+    ;;
+    *)
+        echo "----------------------------"
+        echo "Usage: $SCRIPT_NAME COMMAND"
+        echo "Valid commands are: \`swift\` \`swiftc\` \`build\` \`copylibs\`"
+        echo "----------------------------"
+        echo ""
+    ;;
+esac

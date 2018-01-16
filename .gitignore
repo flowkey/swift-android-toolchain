@@ -1,0 +1,13 @@
+## Dispatch / Foundation sources:
+swift-corelibs-*
+
+## Recreated via rebuild_dispatch.sh:
+dispatch-build
+
+## Created by setup.sh:
+*.json
+usr/bin/swift
+usr/bin/swift-build-tool
+
+# Other files:
+
