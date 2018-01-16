@@ -1,0 +1,301 @@
+
+//===--- glibc.modulemap.gyb ----------------------------------------------===//
+//
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+// See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+//
+//===----------------------------------------------------------------------===//
+
+/// This is a semi-complete modulemap that maps glibc's headers in a roughly
+/// similar way to the Darwin SDK modulemap. We do not take care to list every
+/// single header which may be included by a particular submodule, so there can
+/// still be issues if imported into the same context as one in which someone
+/// included those headers directly.
+///
+/// It's not named just Glibc so that it doesn't conflict in the event of a
+/// future official glibc modulemap.
+module SwiftGlibc [system] {
+
+  link "dl"
+
+  // C standard library
+  module C {
+
+    module features {
+      header "sysroot/features.h"
+      export *
+    }
+
+    module ctype {
+      header "sysroot/ctype.h"
+      export *
+    }
+    module errno {
+      header "sysroot/errno.h"
+      export *
+    }
+
+    module fenv {
+      header "sysroot/fenv.h"
+      export *
+    }
+
+    // note: supplied by compiler
+    // module float {
+    //   header "sysroot/float.h"
+    //   export *
+    // }
+
+    module inttypes {
+      header "sysroot/inttypes.h"
+      export *
+    }
+
+    // note: potentially supplied by compiler
+    // module iso646 {
+    //   header "sysroot/iso646.h"
+    //   export *
+    // }
+    // module limits {
+    //   header "sysroot/limits.h"
+    //   export *
+    // }
+
+    module locale {
+      header "sysroot/locale.h"
+      export *
+    }
+    module math {
+      header "sysroot/math.h"
+      export *
+    }
+    module setjmp {
+      header "sysroot/setjmp.h"
+      export *
+    }
+    module signal {
+      header "sysroot/signal.h"
+      export *
+    }
+
+    // note: supplied by the compiler
+    // module stdarg {
+    //   header "sysroot/stdarg.h"
+    //   export *
+    // }
+    // module stdbool {
+    //   header "sysroot/stdbool.h"
+    //   export *
+    // }
+    // module stddef {
+    //   header "sysroot/stddef.h"
+    //   export *
+    // }
+    // module stdint {
+    //   header "sysroot/stdint.h"
+    //   export *
+    // }
+
+    module stdio {
+      header "sysroot/stdio.h"
+      export *
+    }
+    module stdlib {
+      header "sysroot/stdlib.h"
+      export *
+      export stddef
+    }
+    module string {
+      header "sysroot/string.h"
+      export *
+    }
+
+    // note: supplied by the compiler
+    // explicit module tgmath {
+    //   header "sysroot/tgmath.h"
+    //   export *
+    // }
+
+    module time {
+      header "sysroot/time.h"
+      export *
+    }
+  }
+
+  // POSIX
+  module POSIX {
+
+
+
+    module arpa {
+      module inet {
+        header "sysroot/arpa/inet.h"
+        export *
+      }
+      export *
+    }
+    module dirent {
+      header "sysroot/dirent.h"
+      export *
+    }
+    module dlfcn {
+      header "sysroot/dlfcn.h"
+      export *
+    }
+    module fcntl {
+      header "sysroot/fcntl.h"
+      export *
+    }
+    module fnmatch {
+      header "sysroot/fnmatch.h"
+      export *
+    }
+    module grp {
+      header "sysroot/grp.h"
+      export *
+    }
+    module ioctl {
+      header "sysroot/sys/ioctl.h"
+      export *
+    }
+    module libgen {
+      header "sysroot/libgen.h"
+      export *
+    }
+    module net {
+      module if {
+        header "sysroot/net/if.h"
+        export *
+      }
+    }
+    module netinet {
+      module in {
+        header "sysroot/netinet/in.h"
+        export *
+
+        exclude header "sysroot/netinet6/in6.h"
+      }
+      module tcp {
+        header "sysroot/netinet/tcp.h"
+        export *
+      }
+    }
+    module poll {
+      header "sysroot/poll.h"
+      export *
+    }
+    module pthread {
+      header "sysroot/pthread.h"
+      export *
+    }
+    module pwd {
+      header "sysroot/pwd.h"
+      export *
+    }
+    module regex {
+      header "sysroot/regex.h"
+      export *
+    }
+    module sched {
+      header "sysroot/sched.h"
+      export *
+    }
+    module semaphore {
+      header "sysroot/semaphore.h"
+      export *
+    }
+    module strings {
+      header "sysroot/strings.h"
+      export *
+    }
+
+    module sys {
+      export *
+
+
+      module ipc {
+        header "sysroot/sys/ipc.h"
+        export *
+      }
+      module mman {
+        header "sysroot/sys/mman.h"
+        export *
+      }
+      module msg {
+        header "sysroot/sys/msg.h"
+        export *
+      }
+      module resource {
+        header "sysroot/sys/resource.h"
+        export *
+      }
+      module select {
+        header "sysroot/sys/select.h"
+        export *
+      }
+      module sendfile {
+        header "sysroot/sys/sendfile.h"
+        export *
+      }
+      module socket {
+        header "sysroot/sys/socket.h"
+        export *
+      }
+      module stat {
+        header "sysroot/sys/stat.h"
+        export *
+      }
+      module time {
+        header "sysroot/sys/time.h"
+        export *
+      }
+      module times {
+        header "sysroot/sys/times.h"
+        export *
+      }
+      module types {
+        header "sysroot/sys/types.h"
+        export *
+      }
+      module uio {
+        header "sysroot/sys/uio.h"
+        export *
+      }
+      module un {
+        header "sysroot/sys/un.h"
+        export *
+      }
+      module utsname {
+        header "sysroot/sys/utsname.h"
+        export *
+      }
+      module wait {
+        header "sysroot/sys/wait.h"
+        export *
+      }
+    }
+    module termios {
+      header "sysroot/termios.h"
+      export *
+    }
+    module unistd {
+      header "sysroot/unistd.h"
+      export *
+    }
+    module utime {
+      header "sysroot/utime.h"
+      export *
+    }
+  }
+}
+
+module CUUID [system] {
+  header "sysroot/uuid/uuid.h"
+  link "uuid"
+  export *
+}

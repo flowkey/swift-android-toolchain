@@ -1,0 +1,47 @@
+#!/bin/sh
+
+unset -v CDPATH
+TOOLCHAIN_PATH=$(dirname "`which $0`")
+SCRIPT_NAME=$(basename $0)
+
+TARGET="armv7-none-linux-androideabi"
+
+pushd "$TOOLCHAIN_PATH" > /dev/null
+./setup.sh
+popd > /dev/null
+
+# Sets the PATH for the swift / swiftc commands below!
+# This in itself performs most of this script's magic..
+export PATH="$TOOLCHAIN_PATH/usr/bin:$TOOLCHAIN_PATH/usr/Darwin:$PATH"
+
+COMMAND="$1"; shift;
+case "$COMMAND" in
+    "swift")
+        swift $@
+    ;;
+    "swiftc")
+        swiftc \
+            -target $TARGET \
+            -tools-directory $TOOLCHAIN_PATH/usr/bin \
+            -sdk $TOOLCHAIN_PATH/ndk-android-21 \
+            -L$TOOLCHAIN_PATH/usr/Darwin \
+            -L$TOOLCHAIN_PATH/ndk-android-21/usr/lib \
+            -Xcc -fPIC \
+            $@
+    ;;
+    "build")
+        swift build --destination $TOOLCHAIN_PATH/$TARGET.json $@
+    ;;
+    "copylibs")
+        DESTINATION=${1:-"."}
+        echo "Copying Swift libs into $DESTINATION"
+        cp $TOOLCHAIN_PATH/usr/lib/swift/android/lib{c++_shared,curl,dispatch,Foundation,scu*,swiftCore,swiftGlibc,swiftRemoteMirror,swiftSwiftOnoneSupport,xml2}.so $DESTINATION
+    ;;
+    *)
+        echo "----------------------------"
+        echo "Usage: $SCRIPT_NAME COMMAND"
+        echo "Valid commands are: \`swift\` \`swiftc\` \`build\` \`copylibs\`"
+        echo "----------------------------"
+        echo ""
+    ;;
+esac
