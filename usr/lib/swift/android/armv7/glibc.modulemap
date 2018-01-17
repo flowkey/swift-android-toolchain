@@ -1,4 +1,4 @@
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 1)
+
 //===--- glibc.modulemap.gyb ----------------------------------------------===//
 //
 // This source file is part of the Swift.org open source project
@@ -20,296 +20,282 @@
 /// It's not named just Glibc so that it doesn't conflict in the event of a
 /// future official glibc modulemap.
 module SwiftGlibc [system] {
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 28)
 
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 30)
   link "dl"
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 32)
 
   // C standard library
   module C {
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 61)
 
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 63)
     module features {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/features.h"
+      header "sysroot/features.h"
       export *
     }
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 68)
 
     module ctype {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/ctype.h"
+      header "sysroot/ctype.h"
       export *
     }
     module errno {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/errno.h"
+      header "sysroot/errno.h"
       export *
     }
 
     module fenv {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/fenv.h"
+      header "sysroot/fenv.h"
       export *
     }
 
     // note: supplied by compiler
     // module float {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/float.h"
+    //   header "sysroot/float.h"
     //   export *
     // }
 
     module inttypes {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/inttypes.h"
+      header "sysroot/inttypes.h"
       export *
     }
 
     // note: potentially supplied by compiler
     // module iso646 {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/iso646.h"
+    //   header "sysroot/iso646.h"
     //   export *
     // }
     // module limits {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/limits.h"
+    //   header "sysroot/limits.h"
     //   export *
     // }
 
     module locale {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/locale.h"
+      header "sysroot/locale.h"
       export *
     }
     module math {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/math.h"
+      header "sysroot/math.h"
       export *
     }
     module setjmp {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/setjmp.h"
+      header "sysroot/setjmp.h"
       export *
     }
     module signal {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/signal.h"
+      header "sysroot/signal.h"
       export *
     }
 
     // note: supplied by the compiler
     // module stdarg {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/stdarg.h"
+    //   header "sysroot/stdarg.h"
     //   export *
     // }
     // module stdbool {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/stdbool.h"
+    //   header "sysroot/stdbool.h"
     //   export *
     // }
     // module stddef {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/stddef.h"
+    //   header "sysroot/stddef.h"
     //   export *
     // }
     // module stdint {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/stdint.h"
+    //   header "sysroot/stdint.h"
     //   export *
     // }
 
     module stdio {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/stdio.h"
+      header "sysroot/stdio.h"
       export *
     }
     module stdlib {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/stdlib.h"
+      header "sysroot/stdlib.h"
       export *
       export stddef
     }
     module string {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/string.h"
+      header "sysroot/string.h"
       export *
     }
 
     // note: supplied by the compiler
     // explicit module tgmath {
-    //   header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/tgmath.h"
+    //   header "sysroot/tgmath.h"
     //   export *
     // }
 
     module time {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/time.h"
+      header "sysroot/time.h"
       export *
     }
   }
 
   // POSIX
   module POSIX {
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 173)
 
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 196)
 
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 251)
 
     module arpa {
       module inet {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/arpa/inet.h"
+        header "sysroot/arpa/inet.h"
         export *
       }
       export *
     }
     module dirent {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/dirent.h"
+      header "sysroot/dirent.h"
       export *
     }
     module dlfcn {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/dlfcn.h"
+      header "sysroot/dlfcn.h"
       export *
     }
     module fcntl {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/fcntl.h"
+      header "sysroot/fcntl.h"
       export *
     }
     module fnmatch {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/fnmatch.h"
+      header "sysroot/fnmatch.h"
       export *
     }
     module grp {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/grp.h"
+      header "sysroot/grp.h"
       export *
     }
     module ioctl {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/ioctl.h"
+      header "sysroot/sys/ioctl.h"
       export *
     }
     module libgen {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/libgen.h"
+      header "sysroot/libgen.h"
       export *
     }
     module net {
       module if {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/net/if.h"
+        header "sysroot/net/if.h"
         export *
       }
     }
     module netinet {
       module in {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/netinet/in.h"
+        header "sysroot/netinet/in.h"
         export *
 
-        exclude header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/netinet6/in6.h"
+        exclude header "sysroot/netinet6/in6.h"
       }
       module tcp {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/netinet/tcp.h"
+        header "sysroot/netinet/tcp.h"
         export *
       }
     }
     module poll {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/poll.h"
+      header "sysroot/poll.h"
       export *
     }
     module pthread {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/pthread.h"
+      header "sysroot/pthread.h"
       export *
     }
     module pwd {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/pwd.h"
+      header "sysroot/pwd.h"
       export *
     }
     module regex {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/regex.h"
+      header "sysroot/regex.h"
       export *
     }
     module sched {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sched.h"
+      header "sysroot/sched.h"
       export *
     }
     module semaphore {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/semaphore.h"
+      header "sysroot/semaphore.h"
       export *
     }
     module strings {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/strings.h"
+      header "sysroot/strings.h"
       export *
     }
 
     module sys {
       export *
 
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 355)
 
       module ipc {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/ipc.h"
+        header "sysroot/sys/ipc.h"
         export *
       }
       module mman {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/mman.h"
+        header "sysroot/sys/mman.h"
         export *
       }
       module msg {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/msg.h"
+        header "sysroot/sys/msg.h"
         export *
       }
       module resource {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/resource.h"
+        header "sysroot/sys/resource.h"
         export *
       }
       module select {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/select.h"
+        header "sysroot/sys/select.h"
         export *
       }
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 377)
       module sendfile {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/sendfile.h"
+        header "sysroot/sys/sendfile.h"
         export *
       }
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 382)
       module socket {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/socket.h"
+        header "sysroot/sys/socket.h"
         export *
       }
       module stat {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/stat.h"
+        header "sysroot/sys/stat.h"
         export *
       }
       module time {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/time.h"
+        header "sysroot/sys/time.h"
         export *
       }
       module times {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/times.h"
+        header "sysroot/sys/times.h"
         export *
       }
       module types {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/types.h"
+        header "sysroot/sys/types.h"
         export *
       }
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 408)
       module uio {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/uio.h"
+        header "sysroot/sys/uio.h"
         export *
       }
       module un {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/un.h"
+        header "sysroot/sys/un.h"
         export *
       }
-// ###sourceLocation(file: "/home/johnno/swifty-robot-environment/util/prepare_environment/swift-source/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 422)
       module utsname {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/utsname.h"
+        header "sysroot/sys/utsname.h"
         export *
       }
       module wait {
-        header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/sys/wait.h"
+        header "sysroot/sys/wait.h"
         export *
       }
     }
     module termios {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/termios.h"
+      header "sysroot/termios.h"
       export *
     }
     module unistd {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/unistd.h"
+      header "sysroot/unistd.h"
       export *
     }
     module utime {
-      header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/utime.h"
+      header "sysroot/utime.h"
       export *
     }
   }
 }
 
 module CUUID [system] {
-  header "/Users/geordiejay/ANDROID_TOOLCHAIN/swift-install/ndk-android-21/usr/include/uuid/uuid.h"
+  header "sysroot/uuid/uuid.h"
   link "uuid"
   export *
 }
