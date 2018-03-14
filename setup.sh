@@ -5,7 +5,7 @@ TOOLCHAIN_PATH=$(cd "$(dirname "$0")"; pwd -P)
 TARGET="armv7-none-linux-androideabi"
 OUTPUT_PREFIX="[swift-mac-toolchain setup]"
 
-if [ ! -f ./$TARGET.json ]; then
+if [ ! -f ./$TARGET.json ] || [ ! -f ./usr/bin/swift ] || [ ! -f ./usr/bin/swift-build-tool ]; then
 
 echo "$OUTPUT_PREFIX creating $TARGET.json"
 cat > $TARGET.json <<EOF
