@@ -6,6 +6,9 @@ SCRIPT_NAME=$(basename $0)
 
 TARGET="armv7-none-linux-androideabi"
 
+pushd `dirname "$0"` > /dev/null
+./setup.sh
+popd > /dev/null
 
 # Sets the PATH for the swift / swiftc commands below!
 # This in itself performs most of this script's magic..

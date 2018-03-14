@@ -3,7 +3,11 @@ set +e
 
 TOOLCHAIN_PATH=$(cd "$(dirname "$0")"; pwd -P)
 TARGET="armv7-none-linux-androideabi"
+OUTPUT_PREFIX="[swift-mac-toolchain setup]"
 
+if [ ! -f ./$TARGET.json ]; then
+
+echo "$OUTPUT_PREFIX creating $TARGET.json"
 cat > $TARGET.json <<EOF
 {
     "version": 1,
@@ -23,8 +27,10 @@ cat > $TARGET.json <<EOF
 }
 EOF
 
-
+echo "$OUTPUT_PREFIX setting symlinks to local swift version"
 ln -fs `xcrun --find swift` usr/bin/swift
 ln -fs `xcrun --find swift-build-tool` usr/bin/swift-build-tool
 
-echo "Setup complete. Now just add $TOOLCHAIN_PATH to your \$PATH!"
+echo "$OUTPUT_PREFIX setup complete"
+
+fi
