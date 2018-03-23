@@ -1,13 +1,19 @@
 #!/bin/sh
 set +e
 
+function log {
+    echo "[swift-mac-toolchain setup] $*"
+}
+
 TOOLCHAIN_PATH=$(cd "$(dirname "$0")"; pwd -P)
 TARGET="armv7-none-linux-androideabi"
-OUTPUT_PREFIX="[swift-mac-toolchain setup]"
 
-if [ ! -f ./$TARGET.json ] || [ ! -f ./usr/bin/swift ] || [ ! -f ./usr/bin/swift-build-tool ]; then
+# exit if setup files exist already
+if [ -f ./$TARGET.json ] && [ -f ./usr/bin/swift ] && [ -f ./usr/bin/swift-build-tool ]; then
+    exit 0;
+fi
 
-echo "$OUTPUT_PREFIX creating $TARGET.json"
+log "creating $TARGET.json"
 cat > $TARGET.json <<EOF
 {
     "version": 1,
@@ -27,10 +33,8 @@ cat > $TARGET.json <<EOF
 }
 EOF
 
-echo "$OUTPUT_PREFIX setting symlinks to local swift version"
+log "setting symlinks to local swift version"
 ln -fs `xcrun --find swift` usr/bin/swift
 ln -fs `xcrun --find swift-build-tool` usr/bin/swift-build-tool
 
-echo "$OUTPUT_PREFIX setup complete"
-
-fi
+log "setup complete"
