@@ -6,7 +6,7 @@ SCRIPT_NAME=$(basename $0)
 
 TARGET="armv7-none-linux-androideabi"
 
-pushd `dirname "$0"` > /dev/null
+pushd "$TOOLCHAIN_PATH" > /dev/null
 ./setup.sh
 popd > /dev/null
 
