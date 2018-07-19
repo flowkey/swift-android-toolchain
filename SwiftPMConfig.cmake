@@ -71,7 +71,7 @@ function(add_swiftpm_library PRODUCT_NAME)
 
 
     # The following GLOB is a big optimization, but means that adding or removing a source
-    # file without changing any other will require a "Rebuild Project" to be recognized:
+    # file without changing any other will require a "Refresh Linked C++ Projects" to be recognized:
     file(GLOB_RECURSE SOURCE_FILES RELATIVE ${CMAKE_SOURCE_DIR} "${PROJECT_DIRECTORY}/*.swift")
 
     # Actually build via SwiftPM
@@ -82,6 +82,7 @@ function(add_swiftpm_library PRODUCT_NAME)
         COMMAND ${SWIFT_TOOLCHAIN_ROOT}/sr build -Xswiftc -g --product ${PRODUCT_NAME} --configuration ${BUILD_CONFIGURATION} --build-path ${SWIFTPM_BUILD_PATH} ${SWIFTPM_ARGS}
         DEPENDS ${SOURCE_FILES} ${${PRODUCT_NAME}_PROJECT_DEPENDENCIES}
         WORKING_DIRECTORY ${PROJECT_DIRECTORY}
+        COMMENT "Compiling ${PRODUCT_NAME}. If this worked before and you now get an error saying 'xyz.swift was not found', run 'Build->Refresh Linked C++ Projects' in Android Studio." # or run CMake again
         VERBATIM
     )
 
