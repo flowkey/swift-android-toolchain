@@ -15,7 +15,7 @@ Build swift for Android from your Mac
 
 ## Usage
 
-## From the command line
+### From the command line
 
 The four main commands are:
 - `sr swift`: run Swift REPL
@@ -23,7 +23,7 @@ The four main commands are:
 - `sr build`: build via SwiftPM for Android
 - `sr copylibs`: copy swift libs from local Swift installation to your project
 
-## In Android Studio
+### In Android Studio
 
 In your project’s `CMakeLists.txt`, add the following code after the `cmake_minimum_required(VERSION x.y.z)` declaration.
 
@@ -33,6 +33,12 @@ The following example could be used to build UIKit-cross-platform:
 set(SwiftPM_DIR ./path/to/swift-android-toolchain)
 find_package(SwiftPM REQUIRED)
 
+# Minimal Example:
+add_swiftpm_library(DemoLibrary # Name of the Swift Package Manager 'Product' as listed in Package.swift
+  PROJECT_DIRECTORY ./path/to/swift/package
+)
+
+# Advanced example:
 add_swiftpm_library(UIKit
     PROJECT_DIRECTORY ./path/to/dir/containing/Package.swift # The directory, don't include the 'Package.swift' suffix
     PROJECT_DEPENDENCIES JNI # Optional space-separated list of Swift Product dependencies (built using add_swiftpm_library). Swift corelibs (e.g. Foundation, Dispatch) are implicitly available.
@@ -41,3 +47,7 @@ add_swiftpm_library(UIKit
     MODULE_MAPS SDL/SDL2/include/module.modulemap SDL/SDL_ttf/include/module.modulemap SDL/sdl-gpu/include/module.modulemap # Optional list of clang module maps to include (transitively) in the SwiftPM build. Useful for making C public headers available to your Swift code.
 )
 ```
+
+## Credits
+
+Thanks to [Gonzalo Lorralde](https://github.com/gonzalolarralde) and [John Holdsworth](https://github.com/johnno1962) for their previous work on [swifty-robot-environment](https://github.com/gonzalolarralde/swifty-robot-environment) and [android_toolchain](https://github.com/SwiftJava/android_toolchain).
