@@ -38,11 +38,11 @@ log "Linking locally-installed swift version into the toolchain path"
 
 mkdir -p $TOOLCHAIN_PATH/usr/bin
 
-SYSTEM_SWIFT_DIR=$(dirname `xcrun --find swift`)
-ln -fs "$SYSTEM_SWIFT_DIR"/* "$TOOLCHAIN_PATH/usr/bin"
+HOST_SWIFT_BIN_PATH=${HOST_SWIFT_BIN_PATH:-$(dirname `xcrun --find swift`)}
+ln -fs "$HOST_SWIFT_BIN_PATH"/* "$TOOLCHAIN_PATH/usr/bin"
 
 # Make a hardlink (not symlink!) to `swift` to make the compiler think it's in this install path
 # This allows it to find the Android swift stdlib in $TOOLCHAIN_PATH/usr/lib/swift/android
-ln -f "$SYSTEM_SWIFT_DIR/swift" "$TOOLCHAIN_PATH/usr/bin/swiftc"
+ln -f "$HOST_SWIFT_BIN_PATH/swift" "$TOOLCHAIN_PATH/usr/bin/swiftc"
 
 log "Setup complete"

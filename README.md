@@ -15,7 +15,7 @@ Build Swift for Android from your Mac
 ### For use globally from the command line
 
 1. Clone the repo
-2. Add the cloned destination to your `PATH` environment variable (e.g. in `~/.bash_profile` or equivalent)
+1. Add the cloned destination to your `PATH` environment variable (e.g. in `~/.bash_profile` or equivalent)
 
 
 ## Usage
@@ -54,6 +54,19 @@ add_swiftpm_library(UIKit
 - `sr build`: build via SwiftPM for Android
 - `sr swiftc`: compile individual Swift files for Android. Builds a `.so` library by default but advanced users can build executables and run them on rooted devices.
 - `sr copylibs (destination)`: copy Swift libs from local Swift installation to `destination` or to the current directory if none specified. Not needed if using the Android Studio integration (below).
+
+
+## Troubleshooting
+
+### Mismatching Swift versions
+
+If your system has a newer version of Swift than what is currently available for Android, you will need to download and link an older Swift toolchain into the `swift-android-toolchain`:
+
+- Download the appropriate toolchain from https://www.swift.org (at time of writing `swift-4.1.2-RELEASE` was the latest compatible version for mac OS)
+- Run the downloaded host toolchain's installer. On Mac the toolchain will be installed to /Library/Developer/Toolchains/
+- Rerun `./setup.sh` from the `swift-android-toolchain` directory, setting the `HOST_SWIFT_BIN_PATH` environment variable and with the `-f` flag to overwrite the current setup, like this:
+
+> HOST_SWIFT_BIN_PATH=/Library/Developer/Toolchains/swift-4.1.2-RELEASE.xctoolchain ./setup.sh -f
 
 
 ## Credits
