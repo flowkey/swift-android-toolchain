@@ -66,7 +66,7 @@ If your system has a newer version of Swift than what is currently available for
 - Run the downloaded host toolchain's installer. On Mac the toolchain will be installed to /Library/Developer/Toolchains/
 - Rerun `./setup.sh` from the `swift-android-toolchain` directory, setting the `HOST_SWIFT_BIN_PATH` environment variable and with the `-f` flag to overwrite the current setup, like this:
 
-> HOST_SWIFT_BIN_PATH=/Library/Developer/Toolchains/swift-4.1.2-RELEASE.xctoolchain ./setup.sh -f
+> HOST_SWIFT_BIN_PATH=/Library/Developer/Toolchains/swift-4.1.2-RELEASE.xctoolchain/usr/bin ./setup.sh -f
 
 
 ## Credits
