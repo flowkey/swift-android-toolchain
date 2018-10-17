@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 include(CMakeParseArguments)
 
 # Only support armv7a for now:
-if(ANDROID_LLVM_TRIPLE AND NOT (ANDROID_LLVM_TRIPLE STREQUAL armv7-none-linux-androideabi))
+if(ANDROID_LLVM_TRIPLE AND NOT (ANDROID_LLVM_TRIPLE MATCHES ^armv7-none-linux-androideabi))
     message(FATAL_ERROR "${ANDROID_LLVM_TRIPLE} is not (yet) supported by Swift, please add `android.defaultConfig.ndk.abiFilters \"armeabi-v7a\"` to your app's build.gradle")
 endif()
 
