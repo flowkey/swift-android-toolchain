@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set +e
 
 SWIFT_VERSION="4.1.3"
@@ -25,7 +25,7 @@ cat > $TARGET.json <<EOF
     "extra-swiftc-flags": [
         "-use-ld=gold",
         "-L${TOOLCHAIN_PATH}/ndk-android-21/usr/lib",
-        "-L${TOOLCHAIN_PATH}/usr/Darwin"
+        "-L${TOOLCHAIN_PATH}/usr/`uname`"
     ]
 }
 EOF
@@ -42,7 +42,7 @@ if [ ! -f "$HOST_SWIFT_BIN_PATH/swiftc" ]; then
     exit 1
 fi
 
-ln -fs "$HOST_SWIFT_BIN_PATH"/* "$TOOLCHAIN_PATH/usr/bin"
+ln -fs "$HOST_SWIFT_BIN_PATH"/swift* "$TOOLCHAIN_PATH/usr/bin"
 
 # Make a hardlink (not symlink!) to `swift` to make the compiler think it's in this install path
 # This allows it to find the Android swift stdlib in $TOOLCHAIN_PATH/usr/lib/swift/android

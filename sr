@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 unset -v CDPATH
 TOOLCHAIN_PATH=$(dirname "`which $0`")
@@ -12,7 +12,7 @@ popd > /dev/null
 
 # Sets the PATH for the swift / swiftc commands below!
 # This in itself performs most of this script's magic..
-export PATH="$TOOLCHAIN_PATH/usr/bin:$TOOLCHAIN_PATH/usr/Darwin:$PATH"
+export PATH="$TOOLCHAIN_PATH/usr/bin:$TOOLCHAIN_PATH/usr/`uname`:$PATH"
 
 COMMAND="$1"; shift;
 case "$COMMAND" in
@@ -24,7 +24,7 @@ case "$COMMAND" in
             -target $TARGET \
             -tools-directory $TOOLCHAIN_PATH/usr/bin \
             -sdk $TOOLCHAIN_PATH/ndk-android-21 \
-            -L$TOOLCHAIN_PATH/usr/Darwin \
+            -L$TOOLCHAIN_PATH/usr/`uname` \
             -L$TOOLCHAIN_PATH/ndk-android-21/usr/lib \
             -Xcc -fPIC \
             $@
