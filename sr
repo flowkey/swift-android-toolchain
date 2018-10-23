@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 unset -v CDPATH
-TOOLCHAIN_PATH=$(dirname "`which $0`")
-SCRIPT_NAME=$(basename $0)
+
+SCRIPT_PATH=$(cd ${0%/*} && echo $PWD/${0##*/})
+TOOLCHAIN_PATH=`dirname "$SCRIPT_PATH"`
+SCRIPT_NAME=$(basename $SCRIPT_PATH)
 
 TARGET="armv7-none-linux-androideabi"
 
