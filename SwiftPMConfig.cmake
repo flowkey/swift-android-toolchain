@@ -155,7 +155,7 @@ endfunction(bundle_lib)
 function(bundle_swift_corelibs)
     set(
         SWIFT_CORE_DEPENDENCIES
-        curl dispatch Foundation scudata scui18n scuuc swiftCore swiftGlibc swiftRemoteMirror swiftSwiftOnoneSupport xml2
+        c++_shared curl dispatch Foundation scudata scui18n scuuc swiftCore swiftGlibc swiftRemoteMirror swiftSwiftOnoneSupport xml2
         CACHE STRING "Swift core library dependencies that will be bundled with the app")
 
     set(CORE_DEP_LIBRARY_PATH ${SWIFT_TOOLCHAIN_ROOT}/usr/lib/swift/android)
@@ -164,9 +164,6 @@ function(bundle_swift_corelibs)
     foreach(CORE_DEP IN LISTS SWIFT_CORE_DEPENDENCIES)
         bundle_lib(${CORE_DEP} ${CORE_DEP_LIBRARY_PATH}/lib${CORE_DEP}.so)
     endforeach(CORE_DEP)
-
-    # Copy the C++ stdlib used by Swift and its deps
-    bundle_lib(c++_shared "${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/libs/${ANDROID_ABI}/libc++_shared.so")
 endfunction(bundle_swift_corelibs)
 
 bundle_swift_corelibs()
