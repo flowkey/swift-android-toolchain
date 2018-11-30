@@ -30,7 +30,7 @@ function(add_swiftpm_library PRODUCT_NAME)
     cmake_parse_arguments(${PRODUCT_NAME}
         "" # Options (with no params)
         "PROJECT_DIRECTORY" # Single-argument params
-        "PROJECT_DEPENDENCIES;C_FLAGS;SWIFT_FLAGS;LINK_LIBS;MODULE_MAPS" # Multi-argument params
+        "PROJECT_DEPENDENCIES;C_FLAGS;SWIFT_FLAGS;LINK_LIBS;LINKER_FLAGS;MODULE_MAPS" # Multi-argument params
         ${ARGN})
 
     if(NOT ${PRODUCT_NAME}_PROJECT_DIRECTORY)
@@ -56,6 +56,10 @@ function(add_swiftpm_library PRODUCT_NAME)
         set(SWIFTPM_ARGS "${SWIFTPM_ARGS} -Xswiftc ${FLAG}")
     endforeach(FLAG)
 
+    foreach(FLAG IN LISTS ${PRODUCT_NAME}_LINKER_FLAGS)
+        set(SWIFTPM_ARGS "${SWIFTPM_ARGS} -Xlinker ${FLAG}")
+    endforeach(FLAG)
+
     foreach(DEPENDENCY IN LISTS ${PRODUCT_NAME}_LINK_LIBS)
         set(SWIFTPM_ARGS "${SWIFTPM_ARGS} -Xlinker -l${DEPENDENCY}")
     endforeach(DEPENDENCY)
@@ -72,7 +76,7 @@ function(add_swiftpm_library PRODUCT_NAME)
 
     # The following GLOB is a big optimization, but means that adding or removing a source
     # file without changing any other will require a "Refresh Linked C++ Projects" to be recognized:
-    file(GLOB_RECURSE SOURCE_FILES RELATIVE ${CMAKE_SOURCE_DIR} "${PROJECT_DIRECTORY}/*.swift")
+    file(GLOB_RECURSE SOURCE_FILES RELATIVE ${CMAKE_SOURCE_DIR} "${PROJECT_DIRECTORY}/*.swift" "${PROJECT_DIRECTORY}/*.c" "${PROJECT_DIRECTORY}/*.cpp")
 
     # Actually build via SwiftPM
     set(BUILT_PRODUCT_FILEPATH "${SWIFTPM_BUILD_PATH}/${BUILD_CONFIGURATION}/lib${PRODUCT_NAME}.so")
