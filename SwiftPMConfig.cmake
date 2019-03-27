@@ -81,9 +81,18 @@ function(add_swiftpm_library PRODUCT_NAME)
     # Actually build via SwiftPM
     set(BUILT_PRODUCT_FILEPATH "${SWIFTPM_BUILD_PATH}/${BUILD_CONFIGURATION}/lib${PRODUCT_NAME}.so")
 
+    # in order to use oboe we need some more flags for the AndroidPlayer
+    if( ${PRODUCT_NAME} STREQUAL "AndroidPlayer" )        
+        # XXX: Assume $ANDROID_HOME points to android sdk folder
+        set(ANDROID_HOME $ENV{ANDROID_HOME})
+        set(SR_BUILD_ARGS "-Xcxx -std=c++11 -Xcxx -I${ANDROID_HOME}/ndk-bundle/sources/cxx-stl/llvm-libc++/include/ -Xcxx -I${PROJECT_DIRECTORY}/NoteDetection/Sources/Coboe/include -Xcxx -I${PROJECT_DIRECTORY}/NoteDetection/Sources/Coboe/Sources -Xcxx -I${ANDROID_HOME}/ndk-bundle/sysroot/usr/include")
+    else()
+        set(SR_BUILD_ARGS "")
+    endif()
+    
     add_custom_command(
         OUTPUT ${BUILT_PRODUCT_FILEPATH}
-        COMMAND ${SWIFT_TOOLCHAIN_ROOT}/sr build -Xswiftc -g --product ${PRODUCT_NAME} --configuration ${BUILD_CONFIGURATION} --build-path ${SWIFTPM_BUILD_PATH} ${SWIFTPM_ARGS}
+        COMMAND ${SWIFT_TOOLCHAIN_ROOT}/sr build ${SR_BUILD_ARGS} -Xswiftc -g --product ${PRODUCT_NAME} --configuration ${BUILD_CONFIGURATION} --build-path ${SWIFTPM_BUILD_PATH} ${SWIFTPM_ARGS}
         DEPENDS ${SOURCE_FILES} ${${PRODUCT_NAME}_PROJECT_DEPENDENCIES}
         WORKING_DIRECTORY ${PROJECT_DIRECTORY}
         COMMENT "Compiling ${PRODUCT_NAME}. If this worked before and you now get an error saying 'xyz.swift was not found', run 'Build->Refresh Linked C++ Projects' in Android Studio." # or run CMake again
