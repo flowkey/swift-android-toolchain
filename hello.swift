@@ -5,7 +5,7 @@ import Glibc
 
 let sem = DispatchSemaphore(value: 3)
 
-let flowkeyUrl = URL(string: "http://flowkey.com")!
+// let flowkeyUrl = URL(string: "http://flowkey.com")!
 // URLSession.shared.dataTask(with: flowkeyUrl) { (data, response, error) in
 //     defer { sem.signal() }
 //     if let error = error {
@@ -20,10 +20,9 @@ let flowkeyUrl = URL(string: "http://flowkey.com")!
 
 //     print(data, response)
 // }.resume()
-print(flowkeyUrl)
-sem.signal()
 
-print("Hello")
+
+print(UUID())
 
 
 DispatchQueue.global(qos: .background).async {
