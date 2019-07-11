@@ -12,9 +12,13 @@ pushd "$TOOLCHAIN_PATH" > /dev/null
 ./setup.sh
 popd > /dev/null
 
+readonly NDK="/Users/geordiejay/Downloads/android-ndk-r16b"
+readonly SDK="${TOOLCHAIN_PATH}/Android.sdk"
+
 # Sets the PATH for the swift / swiftc commands below!
 # This in itself performs most of this script's magic..
-export PATH="$TOOLCHAIN_PATH/usr/bin:$TOOLCHAIN_PATH/usr/`uname`:$PATH"
+export PATH="${SDK}/usr/bin:$PATH"
+
 
 COMMAND="$1"; shift;
 case "$COMMAND" in
@@ -23,12 +27,16 @@ case "$COMMAND" in
     ;;
     "swiftc")
         swiftc \
-            -target $TARGET \
-            -tools-directory $TOOLCHAIN_PATH/usr/bin \
-            -sdk $TOOLCHAIN_PATH/ndk-android-21 \
-            -L$TOOLCHAIN_PATH/usr/`uname` \
-            -L$TOOLCHAIN_PATH/ndk-android-21/usr/lib \
-            -Xcc -fPIC \
+            -target "${TARGET}" \
+            -sdk "${SDK}" \
+            -tools-directory "${SDK}/usr/bin" \
+            -Xcc --sysroot="${NDK}/sysroot" \
+            -Xlinker -L"${NDK}/platforms/android-21/arch-arm/usr/lib" \
+            -Xlinker -L"${NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/lib/gcc/arm-linux-androideabi/4.9.x/armv7-a/thumb/" \
+            -Xlinker -L"${NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/lib/armv7-a/thumb/" \
+            -Xclang-linker --sysroot="${NDK}/platforms/android-21/arch-arm" \
+            -Xlinker -rpath -Xlinker '$ORIGIN' \
+            -Xclang-linker "-nostdlib++" \
             $@
     ;;
     "build")
