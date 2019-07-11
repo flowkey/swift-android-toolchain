@@ -1,7 +1,27 @@
+import Foundation
+// import FoundationNetworking
 import Dispatch
 import Glibc
 
-let sem = DispatchSemaphore(value: 2)
+let sem = DispatchSemaphore(value: 3)
+
+let flowkeyUrl = URL(string: "http://flowkey.com")!
+// URLSession.shared.dataTask(with: flowkeyUrl) { (data, response, error) in
+//     defer { sem.signal() }
+//     if let error = error {
+//         print(error)
+//         return
+//     }
+
+//     guard let data = data, let response = response else {
+//         assertionFailure("Unknown error!")
+//         return
+//     }
+
+//     print(data, response)
+// }.resume()
+print(flowkeyUrl)
+sem.signal()
 
 print("Hello")
 
