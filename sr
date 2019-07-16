@@ -31,11 +31,11 @@ case "$COMMAND" in
             -sdk "${SDK}" \
             -tools-directory "${SDK}/usr/bin" \
             -Xcc --sysroot="${NDK}/sysroot" \
+            -Xlinker -lz \
             -Xlinker -L"${NDK}/platforms/android-21/arch-arm/usr/lib" \
             -Xlinker -L"${NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/lib/gcc/arm-linux-androideabi/4.9.x/armv7-a/thumb/" \
             -Xlinker -L"${NDK}/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/lib/armv7-a/thumb/" \
             -Xclang-linker --sysroot="${NDK}/platforms/android-21/arch-arm" \
-            -Xlinker -rpath -Xlinker '$ORIGIN' \
             -Xclang-linker "-nostdlib++" \
             $@
     ;;
