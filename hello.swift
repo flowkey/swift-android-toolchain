@@ -3,9 +3,15 @@ import FoundationNetworking
 import Dispatch
 import Glibc
 
-let flowkeyUrl = URL(string: "http://flowkey.com")!
-URLSession.shared.dataTask(with: flowkeyUrl) { (data, response, error) in
+let fetchURL = URL(string: "http://www.idiomsite.com")!
+
+print(fetchURL)
+print(NSString("lolz"))
+
+let session = URLSession(configuration: .default)
+session.dataTask(with: fetchURL) { (data, response, error) in
     if let error = error {
+        print("Error retrieving data:")
         print(error)
         return
     }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set +e
 
-SWIFT_VERSION="swift-DEVELOPMENT-SNAPSHOT-2019-07-09-a"
+SWIFT_VERSION="swift-DEVELOPMENT-SNAPSHOT-2019-07-24-a"
 
 function log {
     echo "[swift-android-toolchain] $*"

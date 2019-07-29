@@ -47,6 +47,12 @@ case "$COMMAND" in
         echo "Copying Swift libs into $DESTINATION"
         cp $TOOLCHAIN_PATH/usr/lib/swift/android/lib{c++_shared,curl,dispatch,Foundation,scu*,swiftCore,swiftGlibc,swiftRemoteMirror,swiftSwiftOnoneSupport,xml2}.so $DESTINATION
     ;;
+    "push")
+        adb push ${@:-Android.sdk/usr/lib/swift/android/*.so} /data/local/tmp
+    ;;
+    "run")
+        adb shell "cd /data/local/tmp; LD_LIBRARY_PATH=. $@"
+    ;;
     *)
         echo "----------------------------"
         echo "Usage: $SCRIPT_NAME COMMAND"
