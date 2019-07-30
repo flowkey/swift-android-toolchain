@@ -1,33 +1,14 @@
 #!/usr/bin/env bash
 set +e
 
-SWIFT_VERSION="swift-DEVELOPMENT-SNAPSHOT-2019-07-24-a"
+SWIFT_VERSION="swift-DEVELOPMENT-SNAPSHOT-2019-07-28-a"
 
 function log {
     echo "[swift-android-toolchain] $*"
 }
 
 TOOLCHAIN_PATH=$(cd "$(dirname "$0")"; pwd -P)
-TARGET="armv7-none-linux-androideabi"
-TOOLCHAIN_BIN_DIR="${TOOLCHAIN_PATH}/Android.sdk/usr/bin"
-
-cat > $TARGET.json <<EOF
-{
-    "version": 1,
-    "sdk": "${TOOLCHAIN_PATH}/ndk-android-21",
-    "toolchain-bin-dir": "${TOOLCHAIN_BIN_DIR}",
-    "target": "${TARGET}",
-    "dynamic-library-extension": "so",
-    "extra-cc-flags": [
-        "-fPIC",
-    ],
-    "extra-cpp-flags": [
-    ],
-    "extra-swiftc-flags": [
-        "-use-ld=lld",
-    ]
-}
-EOF
+TOOLCHAIN_BIN_DIR="${ANDROID_SDK:-${TOOLCHAIN_PATH}/Android.sdk}/usr/bin"
 
 mkdir -p "${TOOLCHAIN_BIN_DIR}"
 
