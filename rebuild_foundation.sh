@@ -1,71 +1,35 @@
 #!/bin/bash
-#### swifty-robot-environment ####
-#
-# Standalone rebuild of foundation from source
-#
-# Dependencies: swift android toolchain from http://johnholdsworth.com/android_toolchain.tgz
-#
 
 set -e
 
-USER_DIR="$PWD"
+ORIGINAL_PWD="$PWD"
 cd "$(dirname $0)"
 export SWIFT_INSTALLATION_PATH="$PWD"
 export PATH="$SWIFT_INSTALLATION_PATH/usr/Darwin:$TOOLCHAIN/bin:$PATH"
 export SYSROOT="$SWIFT_INSTALLATION_PATH"
 export SWIFT_ANDROID_BUILDPATH="/tmp"
-cd "$USER_DIR"
+cd "$ORIGINAL_PWD"
 
-if [[ "$(uname)" != "Darwin" ]]; then
-    echo "Foundation rebuild only available on macOS"
-    exit 1
-fi
-
-if [[ ! -d swift-corelibs-foundation ]]; then
-    git clone http://github.com/SwiftJava/swift-corelibs-foundation
-    cd swift-corelibs-foundation && git checkout android-toolchain-1.0 && cd -
-fi
-
-	# Build foundation
-	# Remove default foundation implementation and fetch the version with android support
-
-pushd swift-corelibs-foundation
-
-    export PKG_CONFIG_PATH="$SWIFT_INSTALLATION_PATH/pkgconfig"
-    rm -rf "$SWIFT_INSTALLATION_PATH/usr/lib/swift/CoreFoundation"
-
-    export CLANG="$(dirname $(readlink $SWIFT_INSTALLATION_PATH/usr/bin/swift))/clang"
-    export BUILD_DIR="$SWIFT_ANDROID_BUILDPATH/foundation-macosx-x86_64"
-
-    env \
-        SWIFTC="$SWIFT_INSTALLATION_PATH/usr/bin/swiftc" \
-        SWIFT="$SWIFT_INSTALLATION_PATH/usr/bin/swift" \
-        SDKROOT="$SWIFT_ANDROID_BUILDPATH/swift-macosx-x86_64" \
-        DSTROOT="/" \
-        PREFIX="/usr/" \
-        CFLAGS="-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH --sysroot=$SWIFT_INSTALLATION_PATH/ndk-android-21 -I${SDKROOT}/lib/swift -I$SWIFT_INSTALLATION_PATH/ndk-android-21/support/include -I$PWD/closure -g" \
-        SWIFTCFLAGS="-DDEPLOYMENT_TARGET_ANDROID -DDEPLOYMENT_ENABLE_LIBDISPATCH -g" \
-        LDFLAGS="-fuse-ld=gold --sysroot=$SWIFT_INSTALLATION_PATH/ndk-android-21 -L$SWIFT_INSTALLATION_PATH/usr/Darwin -ldispatch " \
-        SDKROOT=$SWIFT_INSTALLATION_PATH/usr \
-        ./configure \
-            Release \
-            --target=armv7-none-linux-androideabi \
-            --sysroot=$SWIFT_INSTALLATION_PATH/ndk-android-21 \
-            -DXCTEST_BUILD_DIR=$SWIFT_ANDROID_BUILDPATH/xctest-linux-x86_64 \
-            -DLIBDISPATCH_SOURCE_DIR=$SWIFT_INSTALLATION_PATH/usr/lib/swift \
-            -DLIBDISPATCH_BUILD_DIR=$SWIFT_INSTALLATION_PATH/usr/lib/swift
-
-    # Prepend SYSROOT env variable to ninja.build script
-    # SYSROOT is not being passed from build.py / script.py to the ninja file yet
-    echo "SYSROOT=$SYSROOT" > build.ninja.new
-    cat build.ninja >> build.ninja.new
-    mv -f build.ninja.new build.ninja
-
-    ninja
-			
-    # There's no installation script for foundation yet, so the installation needs to be done manually.
-    # Apparently the installation for the main script is in swift repo.
-    rsync -a $BUILD_DIR/Foundation/usr/lib/swift/CoreFoundation $SWIFT_INSTALLATION_PATH/usr/lib/swift
-    cp -v $BUILD_DIR/Foundation/libFoundation.so $SWIFT_INSTALLATION_PATH/usr/lib/swift/android/
-    cp -v $BUILD_DIR/Foundation/Foundation.swift* $SWIFT_INSTALLATION_PATH/usr/lib/swift/android/armv7/
-popd
+cmake -G Ninja
+-DSWIFT_ANDROID_SDK=${ANDROID_SDK_ROOT}/Android.sdk-${ANDROID_ABI}
+-C ${SWIFT_INSTALLATION_PATH}/../../caches.cmake
+-C $(Build.SourcesDirectory)/cmake/caches/android-${{ parameters.arch }}-swift-flags.cmake
+-DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/cmake/toolchains/android.toolchain.ndk20.cmake
+-DCMAKE_C_COMPILER=clang
+-DCMAKE_CXX_COMPILER=clang++
+-DCMAKE_BUILD_TYPE=RelWithDebInfo
+-DCMAKE_SWIFT_COMPILER=swiftc
+-DCMAKE_INSTALL_PREFIX=$(install.directory)
+-DCURL_LIBRARY=$(curl.directory)/usr/lib/libcurl.a
+-DCURL_INCLUDE_DIR=$(curl.directory)/usr/include
+-DICU_INCLUDE_DIR=$(icu.directory)/usr/include
+-DICU_UC_LIBRARY=$(icu.directory)/usr/lib/libicuuc$(icu.version).so
+-DICU_UC_LIBRARY_RELEASE=$(icu.directory)/usr/lib/libicuuc$(icu.version).so
+-DICU_I18N_LIBRARY=$(icu.directory)/usr/lib/libicuin$(icu.version).so
+-DICU_I18N_LIBRARY_RELEASE=$(icu.directory)/usr/lib/libicuin$(icu.version).so
+-DLIBXML2_LIBRARY=$(xml2.directory)/usr/lib/libxml2.a
+-DLIBXML2_INCLUDE_DIR=$(xml2.directory)/usr/include/libxml2
+-DFOUNDATION_PATH_TO_LIBDISPATCH_SOURCE=$(Build.SourcesDirectory)/swift-corelibs-libdispatch
+-DFOUNDATION_PATH_TO_LIBDISPATCH_BUILD=$(Build.StagingDirectory)/libdispatch
+$(Build.SourcesDirectory)/swift-corelibs-foundation
+..
