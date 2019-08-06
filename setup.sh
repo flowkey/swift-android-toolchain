@@ -18,12 +18,15 @@ log() {
 
 downloadToolchain() {
     if [[ `uname` == 'Darwin' ]]; then
-        definitions=15
+        BUILD_DEFINITIONS=15
     elif [[ `uname` == 'Linux' ]]; then
-        definitions=14
+        BUILD_DEFINITIONS=14
+    else
+        log "unsupported architecture"
+        exit 1
     fi
 
-    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$definitions&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
+    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?BUILD_DEFINITIONS=$definitions&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
     TOOLCHAIN_ARTIFACT=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$TOOLCHAIN_BUILD_ID/artifacts?apiversion-string=2.0" | jq -r ".value[0].resource.downloadUrl"`
 
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
@@ -33,10 +36,9 @@ downloadToolchain() {
     log "Finished downloading Toolchain"
     unzip -qq 'toolchain.zip'
 
-    log "Moving new toolchain to $PATH_TO_SWIFT_TOOLCHAIN"
+    log "Setting up custom Swift Toolchain ..."
     mv $SCRIPT_ROOT/temp/toolchain/Developer/Toolchains/*.xctoolchain $PATH_TO_SWIFT_TOOLCHAIN
-
-    log "done"
+    chmod -R +x $PATH_TO_SWIFT_TOOLCHAIN/usr/bin
 }
 
 downloadAndroidSdks() {
@@ -79,7 +81,6 @@ setup() {
         # Make a hardlink (not symlink!) to `swift` to make the compiler think it's in this install path
         # This allows it to find the Android swift stdlib in ${SCRIPT_ROOT}/usr/lib/swift/android
         ln -f "$HOST_SWIFT_BIN_PATH/swift" "${TOOLCHAIN_BIN_DIR}/swiftc"
-        chmod a+x "${TOOLCHAIN_BIN_DIR}/swiftc"
     done
 
     log "Setup finished"
