@@ -26,7 +26,7 @@ downloadToolchain() {
         exit 1
     fi
 
-    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?BUILD_DEFINITIONS=$definitions&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
+    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$BUILD_DEFINITIONS&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
     TOOLCHAIN_ARTIFACT=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$TOOLCHAIN_BUILD_ID/artifacts?apiversion-string=2.0" | jq -r ".value[0].resource.downloadUrl"`
 
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
