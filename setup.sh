@@ -18,7 +18,7 @@ log() {
 
 downloadToolchain() {
     if [[ `uname` == 'Darwin' ]]; then
-         definitions=15
+        definitions=15
     elif [[ `uname` == 'Linux' ]]; then
         definitions=14
     fi
