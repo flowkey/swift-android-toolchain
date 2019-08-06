@@ -23,7 +23,7 @@ downloadToolchain() {
         definitions=14
     fi
 
-    TOOLCHAIN_BUILD_ID=`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$definitions&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`
+    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$definitions&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
     TOOLCHAIN_ARTIFACT=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$TOOLCHAIN_BUILD_ID/artifacts?apiversion-string=2.0" | jq -r ".value[0].resource.downloadUrl"`
 
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
@@ -40,7 +40,7 @@ downloadToolchain() {
 }
 
 downloadAndroidSdks() {
-    SDK_BUILD_ID=`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=4&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`
+    SDK_BUILD_ID="${SDK_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=4&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
     SDK_ARTIFACTS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$SDK_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
 
     log "Downloading Android SDKs ($SDK_BUILD_ID) ..."
@@ -60,7 +60,7 @@ downloadAndroidSdks() {
 }
 
 setup() {
-    # fix paths to ndk in downloaded android sdks
+    # fix ndk paths of downloaded android sdks
     sed -i "" -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g $SCRIPT_ROOT/Android.sdk-*/usr/lib/swift/android/*/glibc.modulemap
 
     HOST_SWIFT_BIN_PATH="$PATH_TO_SWIFT_TOOLCHAIN/usr/bin"
@@ -91,11 +91,11 @@ if [[ $1 = "--clean" ]]; then
     rm -rf $SCRIPT_ROOT/Android.sdk-*
 fi
 
-if [ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]; then
+if [[ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]]; then
     downloadToolchain
 fi
 
-if [ ! -d $SCRIPT_ROOT/Android.sdk-armeabi-v7a ]; then    
+if [[ ! -d $SCRIPT_ROOT/Android.sdk-armeabi-v7a ]]; then
     downloadAndroidSdks
 fi
 
