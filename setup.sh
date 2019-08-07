@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -63,7 +63,7 @@ downloadAndroidSdks() {
 
 setup() {
     # fix ndk paths of downloaded android sdks
-    sed -i "" -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g $SCRIPT_ROOT/Android.sdk-*/usr/lib/swift/android/*/glibc.modulemap
+    sed -i -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g $SCRIPT_ROOT/Android.sdk-*/usr/lib/swift/android/*/glibc.modulemap
 
     HOST_SWIFT_BIN_PATH="$PATH_TO_SWIFT_TOOLCHAIN/usr/bin"
     if [ ! -f "$HOST_SWIFT_BIN_PATH/swiftc" ]; then
