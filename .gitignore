@@ -15,3 +15,6 @@ usr/bin
 Android.sdk
 Android.sdk-*
 temp
+
+libs/*/*.so
+!libs/*/libicudt*.so
