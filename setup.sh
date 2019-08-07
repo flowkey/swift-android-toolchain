@@ -11,7 +11,7 @@ TOOLCHAIN_PATH=$(cd "$(dirname "$0")"; pwd -P)
 ANDROID_SDK="${ANDROID_SDK:-${TOOLCHAIN_PATH}/Android.sdk}"
 TOOLCHAIN_BIN_DIR="${ANDROID_SDK}/usr/bin"
 
-sed -i -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g ${ANDROID_SDK}/usr/lib/swift/android/armv7/glibc.modulemap
+sed -i -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g ${ANDROID_SDK}/usr/lib/swift/android/*/glibc.modulemap
 
 mkdir -p "${TOOLCHAIN_BIN_DIR}"
 
