@@ -61,6 +61,26 @@ downloadAndroidSdks() {
     log "Downloading SDKs finished"
 }
 
+downloadLibs() {
+    ICU_BUILD_ID="${ICU_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=9&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
+    ICU_ARTIFACTS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$ICU_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
+
+    log "Downloading ICU ($ICU_BUILD_ID) ..."
+    for URL in $(echo $ICU_ARTIFACTS | jq -r ".[]"); do
+        # download ICU for android only
+        if [[ $URL == *android* ]]; then
+            curl -OJs $URL &
+        fi
+    done
+    wait
+
+    unzip -qq 'icu-android-*.zip'
+
+    mv $SCRIPT_ROOT/temp/icu-android-arm/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/armeabi-v7a
+    mv $SCRIPT_ROOT/temp/icu-android-arm64/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/arm64-v8a
+    mv $SCRIPT_ROOT/temp/icu-android-x64/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/x86_64
+}
+
 setup() {
     # fix ndk paths of downloaded android sdks
     sed -i -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g $SCRIPT_ROOT/Android.sdk-*/usr/lib/swift/android/*/glibc.modulemap
@@ -88,8 +108,7 @@ setup() {
 
 if [[ $1 = "--clean" ]]; then
     log "Let's start from scratch ..." 
-    rm -rf $PATH_TO_SWIFT_TOOLCHAIN
-    rm -rf $SCRIPT_ROOT/Android.sdk-*
+    git clean -xdf
 fi
 
 if [[ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]]; then
@@ -98,6 +117,10 @@ fi
 
 if [[ ! -d $SCRIPT_ROOT/Android.sdk-armeabi-v7a ]]; then
     downloadAndroidSdks
+fi
+
+if [[ ! -f $SCRIPT_ROOT/libs/armeabi-v7a/libicuuc64.so ]]; then
+    downloadLibs
 fi
 
 setup
