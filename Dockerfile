@@ -33,7 +33,6 @@ RUN yes | sdkmanager --licenses && sdkmanager --update
 RUN sdkmanager \
     "tools" \
     "platform-tools" \
-    "ndk-bundle" \
     "build-tools;28.0.3" \
     "platforms;android-28" 
 
@@ -43,11 +42,11 @@ RUN tar xvzf cmake-3.15.1-Linux-x86_64.tar.gz
 RUN mv cmake-3.15.1-Linux-x86_64 /opt/cmake
 ENV PATH=/opt/cmake/bin:$PATH
 
-# install ndk 16
+# install ndk 16b
 RUN curl -LOJ https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip
 RUN unzip android-ndk-r16b-linux-x86_64.zip
-RUN mv android-ndk-r16b /opt/android-ndk-r16b
-ENV ANDROID_NDK_PATH /opt/android-ndk-r16b
+RUN mv android-ndk-r16b $ANDROID_HOME/ndk-bundle
+ENV ANDROID_NDK_PATH $ANDROID_HOME/ndk-bundle
 
 # setup swift android toolchain
 ADD setup.sh /opt/swift-android-toolchain/setup.sh
