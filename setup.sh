@@ -5,16 +5,20 @@ set -e
 ORIGINAL_PWD=$PWD
 SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
 AZURE_BASE_PATH=https://dev.azure.com/compnerd/windows-swift
-
-rm -rf $SCRIPT_ROOT/temp
-mkdir -p $SCRIPT_ROOT/temp
-cd $SCRIPT_ROOT/temp
-
 PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
 
 log() {
     echo "[swift-android-toolchain] $*"
 }
+
+if [[ $1 = "--clean" ]]; then
+    log "Let's start from scratch ..."
+    git -C $SCRIPT_ROOT clean -xdf
+fi
+
+rm -rf $SCRIPT_ROOT/temp
+mkdir -p $SCRIPT_ROOT/temp
+cd $SCRIPT_ROOT/temp
 
 downloadToolchain() {
     if [[ `uname` == 'Darwin' ]]; then
@@ -32,7 +36,9 @@ downloadToolchain() {
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
 
     log "Downloading custom Swift Toolchain ($TOOLCHAIN_BUILD_ID) ..."
-    curl -OJ $TOOLCHAIN_ARTIFACT
+    TOOLCHAIN_ARTIFACT=`echo -n $TOOLCHAIN_ARTIFACT | sed -e s~https://dev.azure.com~http://swift-ci.flowkey.com~g`
+
+    curl -OJ "$TOOLCHAIN_ARTIFACT"
     log "Finished downloading Toolchain"
     unzip -qq 'toolchain.zip'
 
@@ -105,11 +111,6 @@ setup() {
 
     log "Setup finished"
 }
-
-if [[ $1 = "--clean" ]]; then
-    log "Let's start from scratch ..." 
-    git clean -xdf
-fi
 
 if [[ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]]; then
     downloadToolchain
