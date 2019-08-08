@@ -31,14 +31,13 @@ downloadToolchain() {
     fi
 
     TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$BUILD_DEFINITIONS&resultFilter=succeeded&\$top=1&api-version-string=5.0" | jq ".value[0].id"`}"
-    TOOLCHAIN_ARTIFACT=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$TOOLCHAIN_BUILD_ID/artifacts?apiversion-string=2.0" | jq -r ".value[0].resource.downloadUrl"`
+    TOOLCHAIN_ARTIFACT_URL=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$TOOLCHAIN_BUILD_ID/artifacts?apiversion-string=2.0" | jq -r ".value[0].resource.downloadUrl"`
 
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
 
     log "Downloading custom Swift Toolchain ($TOOLCHAIN_BUILD_ID) ..."
-    TOOLCHAIN_ARTIFACT=`echo -n $TOOLCHAIN_ARTIFACT | sed -e s~https://dev.azure.com~http://swift-ci.flowkey.com~g`
 
-    curl -OJ "$TOOLCHAIN_ARTIFACT"
+    curl -OJ `toCachedUrl $TOOLCHAIN_ARTIFACT_URL`
     log "Finished downloading Toolchain"
     unzip -qq 'toolchain.zip'
 
@@ -47,13 +46,18 @@ downloadToolchain() {
     chmod -R +x $PATH_TO_SWIFT_TOOLCHAIN/usr/bin
 }
 
+toCachedUrl() {
+    # download speed on dev.azure.com is super slow, download from our cache for faster downloads
+    echo -n $1 | sed -e s~https://dev.azure.com~http://swift-ci.flowkey.com~g
+}
+
 downloadAndroidSdks() {
     SDK_BUILD_ID="${SDK_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=4&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
     SDK_ARTIFACTS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$SDK_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
 
     log "Downloading Android SDKs ($SDK_BUILD_ID) ..."
     for URL in $(echo $SDK_ARTIFACTS | jq -r ".[]"); do
-        curl -OJs $URL &
+        curl -OJs `toCachedUrl $URL` &
     done
     wait
 
@@ -75,7 +79,7 @@ downloadLibs() {
     for URL in $(echo $ICU_ARTIFACTS | jq -r ".[]"); do
         # download ICU for android only
         if [[ $URL == *android* ]]; then
-            curl -OJs $URL &
+            curl -OJs `toCachedUrl $URL` &
         fi
     done
     wait
