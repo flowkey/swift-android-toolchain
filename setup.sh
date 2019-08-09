@@ -30,7 +30,7 @@ downloadToolchain() {
         exit 1
     fi
 
-    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$BUILD_DEFINITIONS&resultFilter=succeeded&\$top=1&api-version-string=5.0" | jq ".value[0].id"`}"
+    TOOLCHAIN_BUILD_ID="${TOOLCHAIN_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=$BUILD_DEFINITIONS"'&resultFilter=succeeded&$top=1&api-version-string=5.0' | jq ".value[0].id"`}"
     TOOLCHAIN_ARTIFACT_URL=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$TOOLCHAIN_BUILD_ID/artifacts?apiversion-string=2.0" | jq -r ".value[0].resource.downloadUrl"`
 
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
@@ -52,11 +52,11 @@ toCachedUrl() {
 }
 
 downloadAndroidSdks() {
-    SDK_BUILD_ID="${SDK_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=4&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
-    SDK_ARTIFACTS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$SDK_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
+    SDK_BUILD_ID="${SDK_BUILD_ID:-`curl -s "$AZURE_BASE_PATH"'/_apis/build/builds?definitions=4&resultFilter=succeeded&$top=1&api-version-string=5.0' | jq ".value[0].id"`}"
+    SDK_ARTIFACT_URLS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$SDK_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
 
     log "Downloading Android SDKs ($SDK_BUILD_ID) ..."
-    for URL in $(echo $SDK_ARTIFACTS | jq -r ".[]"); do
+    for URL in $(echo $SDK_ARTIFACT_URLS | jq -r ".[]"); do
         curl -OJs `toCachedUrl $URL` &
     done
     wait
@@ -72,7 +72,7 @@ downloadAndroidSdks() {
 }
 
 downloadLibs() {
-    ICU_BUILD_ID="${ICU_BUILD_ID:-`curl -s "$AZURE_BASE_PATH/_apis/build/builds?definitions=9&resultFilter=succeeded&api-version-string=5.0" | jq ".value[0].id"`}"
+    ICU_BUILD_ID="${ICU_BUILD_ID:-`curl -s "$AZURE_BASE_PATH"'/_apis/build/builds?definitions=9&resultFilter=succeeded&api-version-string=5.0' | jq ".value[0].id"`}"
     ICU_ARTIFACTS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$ICU_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
 
     log "Downloading ICU ($ICU_BUILD_ID) ..."
