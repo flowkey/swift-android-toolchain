@@ -4,7 +4,7 @@ MAINTAINER flowkey
 RUN apt-get update && \
     apt-get install --yes \
         xvfb lib32z1 lib32stdc++6 build-essential \
-        libcurl4-openssl-dev libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev  \
+        libcurl4-openssl-dev libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev libstdc++6  \
         unzip wget lsof nano vim sudo rubygems ruby-dev \
         openjdk-8-jdk jq curl
 
@@ -38,20 +38,21 @@ RUN sdkmanager \
 
 # install cmake
 RUN curl -LOJ https://github.com/Kitware/CMake/releases/download/v3.15.1/cmake-3.15.1-Linux-x86_64.tar.gz
-RUN tar xvzf cmake-3.15.1-Linux-x86_64.tar.gz
+RUN tar xvzf cmake-3.15.1-Linux-x86_64.tar.gz && rm cmake-*.tar.gz
 RUN mv cmake-3.15.1-Linux-x86_64 /opt/cmake
 ENV PATH=/opt/cmake/bin:$PATH
 
 # install ndk 16b
 RUN curl -LOJ https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip
-RUN unzip android-ndk-r16b-linux-x86_64.zip
+RUN unzip android-ndk-r16b-linux-x86_64.zip && rm android-ndk-*.zip
 RUN mv android-ndk-r16b $ANDROID_HOME/ndk-bundle
 ENV ANDROID_NDK_PATH $ANDROID_HOME/ndk-bundle
 
 # setup swift android toolchain
 ADD setup.sh /opt/swift-android-toolchain/setup.sh
 RUN chmod +x /opt/swift-android-toolchain/setup.sh
-RUN /opt/swift-android-toolchain/setup.sh --clean
+RUN /opt/swift-android-toolchain/setup.sh
+ENV SWIFT_ANDROID_TOOLCHAIN_PATH /opt/swift-android-toolchain
 
 # publish on dockerhub
 # docker build -t flowkey/androidswift5 . && docker push flowkey/androidswift5
