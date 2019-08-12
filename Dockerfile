@@ -3,11 +3,8 @@ MAINTAINER flowkey
 
 RUN apt-get update && \
     apt-get install --yes \
-        clang xvfb lib32z1 lib32stdc++6 build-essential libicu-dev \
-        libatomic1 libbsd0 libcurl4 libxml2 libedit2 libsqlite3-0 libc6-dev binutils \
-        libgcc-6-dev libcurl4-openssl-dev libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
-        libstdc++6 unzip wget lsof vim rubygems ruby \
-        openjdk-8-jdk jq curl git && \
+        clang build-essential unzip wget lsof vim  \
+        openjdk-8-jdk jq curl git rubygems ruby-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # fastlane
@@ -63,6 +60,10 @@ ADD libs /opt/swift-android-toolchain/libs/
 RUN chmod +x /opt/swift-android-toolchain/setup.sh
 RUN /opt/swift-android-toolchain/setup.sh
 ENV SWIFT_ANDROID_TOOLCHAIN_PATH /opt/swift-android-toolchain
+
+# Add custom `ld.gold` to prevent `unsupported ELF machine number 40` error
+# This is weird because it looks like it's the armv7a ld.gold but it seems to support all archs
+RUN rm /usr/bin/ld.gold && ln -s $ANDROID_NDK_PATH/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold /usr/bin/ld.gold
 
 # publish on dockerhub
 # docker build -t flowkey/androidswift5 . && docker push flowkey/androidswift5
