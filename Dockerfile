@@ -1,11 +1,12 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER flowkey
 
 RUN apt-get update && \
     apt-get install --yes \
-        xvfb lib32z1 lib32stdc++6 build-essential \
-        libcurl4-openssl-dev libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev  \
-        unzip wget lsof vim sudo rubygems ruby-dev \
+        clang xvfb lib32z1 lib32stdc++6 build-essential libicu-dev \
+        libatomic1 libbsd0 libcurl4 libxml2 libedit2 libsqlite3-0 libc6-dev binutils \
+        libgcc-6-dev libcurl4-openssl-dev libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev \
+        libstdc++6 unzip wget lsof vim rubygems ruby \
         openjdk-8-jdk jq curl git && \
     rm -rf /var/lib/apt/lists/*
 
@@ -46,6 +47,7 @@ ENV PATH=/opt/cmake/bin:$PATH
 # install ninja 1.9.0
 RUN curl -LOJ https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-linux.zip && \
     unzip ninja-linux.zip && rm ninja-linux.zip && \
+    mkdir -p /opt/ninja/bin && \
     mv ninja /opt/ninja/bin
 ENV PATH=/opt/ninja/bin:$PATH
 
@@ -56,7 +58,8 @@ RUN curl -LOJ https://dl.google.com/android/repository/android-ndk-r16b-linux-x8
 ENV ANDROID_NDK_PATH $ANDROID_HOME/ndk-bundle
 
 # setup swift android toolchain
-ADD setup.sh libs cmake_caches.cmake /opt/swift-android-toolchain
+ADD setup.sh libs/ cmake_caches.cmake /opt/swift-android-toolchain/
+ADD libs /opt/swift-android-toolchain/libs/
 RUN chmod +x /opt/swift-android-toolchain/setup.sh
 RUN /opt/swift-android-toolchain/setup.sh
 ENV SWIFT_ANDROID_TOOLCHAIN_PATH /opt/swift-android-toolchain
