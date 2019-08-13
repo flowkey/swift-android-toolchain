@@ -11,3 +11,10 @@ usr/bin
 # Other files:
 .DS_Store
 
+*.xctoolchain
+Android.sdk
+Android.sdk-*
+temp
+
+libs/*/*.so
+!libs/*/libicudt*.so
