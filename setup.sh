@@ -7,9 +7,9 @@ SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
 AZURE_BASE_PATH=https://dev.azure.com/compnerd/windows-swift
 PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
 
-SDK_BUILD_ID=9705
-TOOLCHAIN_BUILD_ID=9963
-ICU_BUILD_ID=9995
+SDK_BUILD_ID=17916
+TOOLCHAIN_BUILD_ID=17979
+ICU_BUILD_ID=17882
 
 log() {
     echo "[swift-android-toolchain] $*"
@@ -29,7 +29,7 @@ downloadToolchain() {
         BUILD_DEFINITIONS=15
     elif [[ `uname` == 'Linux' ]]; then
         BUILD_DEFINITIONS=14
-        TOOLCHAIN_BUILD_ID=9753
+        TOOLCHAIN_BUILD_ID=17998
     else
         log "unsupported architecture"
         exit 1
@@ -53,7 +53,7 @@ downloadToolchain() {
 
 toCachedUrl() {
     # download speed on dev.azure.com is super slow, download from our cache for faster downloads
-    echo -n $1 #| sed -e s~https://dev.azure.com~http://swift-ci.flowkey.com~g
+    echo -n $1 | sed -e s~https://dev.azure.com~http://swift-ci.flowkey.com~g
 }
 
 downloadAndroidSdks() {
