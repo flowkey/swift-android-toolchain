@@ -4,7 +4,7 @@ set -e
 
 ORIGINAL_PWD=$PWD
 SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
-AZURE_BASE_PATH=https://dev.azure.com/compnerd/windows-swift
+AZURE_BASE_PATH=https://dev.azure.com/compnerd/swift-build
 PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
 
 SDK_BUILD_ID=17916
