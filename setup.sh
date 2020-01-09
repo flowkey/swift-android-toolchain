@@ -49,8 +49,7 @@ downloadToolchain() {
     rm -rf $PATH_TO_SWIFT_TOOLCHAIN
 
     log "Downloading custom Swift Toolchain ($TOOLCHAIN_BUILD_ID) ..."
-
-    curl -OJ `toCachedUrl $TOOLCHAIN_ARTIFACT_URL`
+    curl -J -o ./toolchain.zip `toCachedUrl $TOOLCHAIN_ARTIFACT_URL`
     log "Finished downloading Toolchain"
     unzip -qq 'toolchain.zip'
 
