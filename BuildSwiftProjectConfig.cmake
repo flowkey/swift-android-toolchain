@@ -13,14 +13,14 @@ add_dependencies(swiftBuildDummy allTarget)
 
 function(build_swift_project)
     add_custom_command(
-        OUTPUT ${OUTPUT_LIBS}
-        COMMAND ANDROID_ABI=${ANDROID_ABI} CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} "${SWIFT_TOOLCHAIN_ROOT}/swift-build.sh" ${PROJECT_DIRECTORY}
+        OUTPUT always_rebuild
+        COMMAND LIBRARY_OUTPUT_DIRECTORY=${LIBRARY_OUTPUT_DIRECTORY} ANDROID_ABI=${ANDROID_ABI} CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} "${SWIFT_TOOLCHAIN_ROOT}/swift-build.sh" ${PROJECT_DIRECTORY}
         WORKING_DIRECTORY ${PROJECT_DIRECTORY}
         VERBATIM
     )
 
     add_custom_target(allTarget ALL
-        DEPENDS ${OUTPUT_LIBS}
+        DEPENDS always_rebuild
         VERBATIM
     )
-endfunction(build)
+endfunction(build_swift_project)

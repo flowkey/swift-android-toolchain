@@ -7,6 +7,7 @@ echo "building $PROJECT_DIRECTORY"
 
 SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
 SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT}"
+LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/android/app/src/main/jniLibs/${ANDROID_ABI}}"
 
 if [[ ! ${ANDROID_NDK_PATH} ]]
 then
@@ -30,7 +31,6 @@ build() {
 
     # You need a different SDK per arch, e.g. swift-android-toolchain/Android.sdk-armeabi-v7a/
     export ANDROID_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH/Android.sdk-${ANDROID_ABI}"
-    local LIBRARY_OUTPUT_DIRECTORY="${PROJECT_DIRECTORY}/android/app/src/main/jniLibs/${ANDROID_ABI}"
 
     $SWIFT_ANDROID_TOOLCHAIN_PATH/setup.sh
 
