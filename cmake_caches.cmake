@@ -51,7 +51,7 @@ set(SWIFT_FLAGS
     -Xclang-linker --sysroot=${ANDROID_NDK}/platforms/${ANDROID_PLATFORM}/arch-${ANDROID_SYSROOT_ABI}
     -Xclang-linker -nostdlib++
     -Xlinker -L${SWIFT_SDK}/usr/lib/swift/android
-    -v
+    #-v
 )
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)

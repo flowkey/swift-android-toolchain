@@ -36,9 +36,9 @@ RUN yes | sdkmanager --licenses && sdkmanager --update && \
         "platforms;android-28"
 
 # install cmake
-RUN curl -LOJ https://github.com/Kitware/CMake/releases/download/v3.15.1/cmake-3.15.1-Linux-x86_64.tar.gz && \
-    tar xvzf cmake-3.15.1-Linux-x86_64.tar.gz && rm cmake-*.tar.gz && \
-    mv cmake-3.15.1-Linux-x86_64 /opt/cmake
+RUN curl -LOJ https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz && \
+    tar xvzf cmake-*-Linux-x86_64.tar.gz && rm cmake-*.tar.gz && \
+    mv cmake-* /opt/cmake
 ENV PATH=/opt/cmake/bin:$PATH
 
 # install ninja 1.9.0
@@ -64,6 +64,3 @@ ENV SWIFT_ANDROID_TOOLCHAIN_PATH /opt/swift-android-toolchain
 # Add custom `ld.gold` to prevent `unsupported ELF machine number 40` error
 # This is weird because it looks like it's the armv7a ld.gold but it seems to support all archs
 RUN rm /usr/bin/ld.gold && ln -s $ANDROID_NDK_PATH/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold /usr/bin/ld.gold
-
-# publish on dockerhub
-# docker build -t flowkey/androidswift5 . && docker push flowkey/androidswift5

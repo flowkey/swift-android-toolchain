@@ -7,9 +7,18 @@ SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
 AZURE_BASE_PATH=https://dev.azure.com/compnerd/swift-build
 PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
 
-SDK_BUILD_ID=17916
-TOOLCHAIN_BUILD_ID=17979
-ICU_BUILD_ID=17882
+# SDK_BUILD_ID=17916
+# ICU_BUILD_ID=17882
+
+# if [[ `uname` == 'Darwin' ]]; then
+#     TOOLCHAIN_BUILD_ID=17979
+# elif [[ `uname` == 'Linux' ]]; then
+#     TOOLCHAIN_BUILD_ID=17998
+# else
+#     log "unsupported architecture"
+#     exit 1
+# fi
+
 
 log() {
     echo "[swift-android-toolchain] $*"
@@ -29,7 +38,6 @@ downloadToolchain() {
         BUILD_DEFINITIONS=15
     elif [[ `uname` == 'Linux' ]]; then
         BUILD_DEFINITIONS=14
-        TOOLCHAIN_BUILD_ID=17998
     else
         log "unsupported architecture"
         exit 1
