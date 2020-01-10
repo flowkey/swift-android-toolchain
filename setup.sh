@@ -7,18 +7,17 @@ SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
 AZURE_BASE_PATH=https://dev.azure.com/compnerd/swift-build
 PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
 
-# SDK_BUILD_ID=17916
-# ICU_BUILD_ID=17882
+SDK_BUILD_ID=23858 # definitionId 43
+ICU_BUILD_ID=23907 # definitionId 9
 
-# if [[ `uname` == 'Darwin' ]]; then
-#     TOOLCHAIN_BUILD_ID=17979
-# elif [[ `uname` == 'Linux' ]]; then
-#     TOOLCHAIN_BUILD_ID=17998
-# else
-#     log "unsupported architecture"
-#     exit 1
-# fi
-
+if [[ `uname` == 'Darwin' ]]; then
+    TOOLCHAIN_BUILD_ID=23879 # definitionId 15
+elif [[ `uname` == 'Linux' ]]; then
+    TOOLCHAIN_BUILD_ID=23930 # definitionId 14
+else
+    log "unsupported architecture"
+    exit 1
+fi
 
 log() {
     echo "[swift-android-toolchain] $*"
@@ -54,7 +53,7 @@ downloadToolchain() {
     unzip -qq 'toolchain.zip'
 
     log "Setting up custom Swift Toolchain ..."
-    mv $SCRIPT_ROOT/temp/toolchain/Developer/Toolchains/*.xctoolchain $PATH_TO_SWIFT_TOOLCHAIN
+    mv $SCRIPT_ROOT/temp/toolchain-*/Library/Developer/Toolchains/*.xctoolchain $PATH_TO_SWIFT_TOOLCHAIN
     chmod -R +x $PATH_TO_SWIFT_TOOLCHAIN/usr/bin
 }
 
@@ -64,7 +63,7 @@ toCachedUrl() {
 }
 
 downloadAndroidSdks() {
-    SDK_BUILD_ID="${SDK_BUILD_ID:-`curl -s "$AZURE_BASE_PATH"'/_apis/build/builds?definitions=4&resultFilter=succeeded&$top=1&api-version-string=5.0' | jq ".value[0].id"`}"
+    SDK_BUILD_ID="${SDK_BUILD_ID:-`curl -s "$AZURE_BASE_PATH"'/_apis/build/builds?definitions=43&resultFilter=succeeded&$top=1&api-version-string=5.0' | jq ".value[0].id"`}"
     SDK_ARTIFACT_URLS=`curl -s "$AZURE_BASE_PATH/_apis/build/builds/$SDK_BUILD_ID/artifacts?apiversion-string=2.0" | jq ".value" | jq "map_values(.resource.downloadUrl)"`
 
     log "Downloading Android SDKs ($SDK_BUILD_ID) ..."
@@ -76,9 +75,9 @@ downloadAndroidSdks() {
     unzip -qq 'sdk-android-*.zip'
 
     rm -rf $SCRIPT_ROOT/Android.sdk-*/
-    mv $SCRIPT_ROOT/temp/sdk-android-arm/Developer/Platforms/Android.platform/Developer/SDKs/Android.sdk/ $SCRIPT_ROOT/Android.sdk-armeabi-v7a
-    mv $SCRIPT_ROOT/temp/sdk-android-arm64/Developer/Platforms/Android.platform/Developer/SDKs/Android.sdk/ $SCRIPT_ROOT/Android.sdk-arm64-v8a
-    mv $SCRIPT_ROOT/temp/sdk-android-x64/Developer/Platforms/Android.platform/Developer/SDKs/Android.sdk/ $SCRIPT_ROOT/Android.sdk-x86_64
+    mv $SCRIPT_ROOT/temp/sdk-android-arm/Library/Developer/Platforms/Android.platform/Developer/SDKs/Android.sdk/ $SCRIPT_ROOT/Android.sdk-armeabi-v7a
+    mv $SCRIPT_ROOT/temp/sdk-android-arm64/Library/Developer/Platforms/Android.platform/Developer/SDKs/Android.sdk/ $SCRIPT_ROOT/Android.sdk-arm64-v8a
+    mv $SCRIPT_ROOT/temp/sdk-android-x64/Library/Developer/Platforms/Android.platform/Developer/SDKs/Android.sdk/ $SCRIPT_ROOT/Android.sdk-x86_64
 
     log "Downloading SDKs finished"
 }
@@ -89,18 +88,16 @@ downloadLibs() {
 
     log "Downloading ICU ($ICU_BUILD_ID) ..."
     for URL in $(echo $ICU_ARTIFACTS | jq -r ".[]"); do
-        # download ICU for android only
-        if [[ $URL == *android* ]]; then
-            curl -OJs `toCachedUrl $URL` &
-        fi
+        # download ICU for android only  
+        curl -OJs `toCachedUrl $URL` &
     done
     wait
 
     unzip -qq 'icu-android-*.zip'
 
-    mv $SCRIPT_ROOT/temp/icu-android-arm/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/armeabi-v7a
-    mv $SCRIPT_ROOT/temp/icu-android-arm64/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/arm64-v8a
-    mv $SCRIPT_ROOT/temp/icu-android-x64/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/x86_64
+    mv $SCRIPT_ROOT/temp/icu-android-arm/Library/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/armeabi-v7a
+    mv $SCRIPT_ROOT/temp/icu-android-arm64/Library/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/arm64-v8a
+    mv $SCRIPT_ROOT/temp/icu-android-x64/Library/icu-64/usr/lib/*.so $SCRIPT_ROOT/libs/x86_64
 }
 
 setup() {
@@ -125,6 +122,7 @@ setup() {
         ln -f "$HOST_SWIFT_BIN_PATH/swift" "${TOOLCHAIN_BIN_DIR}/swiftc"
     done
 
+    rm -rf $SCRIPT_ROOT/temp/
     log "Setup finished"
 }
 
