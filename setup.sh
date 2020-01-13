@@ -7,13 +7,13 @@ SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
 AZURE_BASE_PATH=https://dev.azure.com/compnerd/swift-build
 PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
 
-SDK_BUILD_ID=23858 # definitionId 43
-ICU_BUILD_ID=23907 # definitionId 9
+SDK_BUILD_ID=24083
+ICU_BUILD_ID=24100
 
 if [[ `uname` == 'Darwin' ]]; then
-    TOOLCHAIN_BUILD_ID=23879 # definitionId 15
+    TOOLCHAIN_BUILD_ID=24080
 elif [[ `uname` == 'Linux' ]]; then
-    TOOLCHAIN_BUILD_ID=23930 # definitionId 14
+    TOOLCHAIN_BUILD_ID=24081
 else
     log "unsupported architecture"
     exit 1
@@ -88,7 +88,7 @@ downloadLibs() {
 
     log "Downloading ICU ($ICU_BUILD_ID) ..."
     for URL in $(echo $ICU_ARTIFACTS | jq -r ".[]"); do
-        # download ICU for android only  
+        # download ICU for android only
         curl -OJs `toCachedUrl $URL` &
     done
     wait
