@@ -1,49 +1,84 @@
 #!/usr/bin/env bash
-set +e
 
-SWIFT_VERSION="4.1.3"
+set -e
 
-function log {
+SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
+PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-flowkey.xctoolchain"
+UNAME=`uname`
+
+log() {
     echo "[swift-android-toolchain] $*"
 }
 
-TOOLCHAIN_PATH=$(cd "$(dirname "$0")"; pwd -P)
-TARGET="armv7-none-linux-androideabi"
-
-cat > $TARGET.json <<EOF
-{
-    "version": 1,
-    "sdk": "${TOOLCHAIN_PATH}/ndk-android-21",
-    "toolchain-bin-dir": "${TOOLCHAIN_PATH}/usr/bin",
-    "target": "${TARGET}",
-    "dynamic-library-extension": "so",
-    "extra-cc-flags": [
-        "-fPIC",
-    ],
-    "extra-cpp-flags": [
-    ],
-    "extra-swiftc-flags": [
-        "-use-ld=gold",
-        "-L${TOOLCHAIN_PATH}/ndk-android-21/usr/lib",
-        "-L${TOOLCHAIN_PATH}/usr/`uname`"
-    ]
-}
-EOF
-
-mkdir -p $TOOLCHAIN_PATH/usr/bin
-
-HOST_SWIFT_BIN_PATH=${HOST_SWIFT_BIN_PATH:-"/Library/Developer/Toolchains/swift-${SWIFT_VERSION}-RELEASE.xctoolchain/usr/bin"}
-
-if [ ! -f "$HOST_SWIFT_BIN_PATH/swiftc" ]; then
-    log "Couldn't find swift ${SWIFT_VERSION}"
-    log "Download and install it from https://swift.org/download"
-    log "e.g. for macOS: https://swift.org/builds/swift-${SWIFT_VERSION}-release/xcode/swift-${SWIFT_VERSION}-RELEASE/swift-${SWIFT_VERSION}-RELEASE-osx.pkg"
-    log "If you have the toolchain installed at a non-standard path (e.g. on Linux), 'export HOST_SWIFT_BIN_PATH=your/path/usr/bin' and try again"
+if [[ ! ${ANDROID_NDK_PATH} ]]; then
+    log "Please define ANDROID_NDK_PATH and point to your local version of ndk-r16b"
+    if [[ ${UNAME} == "Darwin" ]]; then
+        log "Download from https://dl.google.com/android/repository/android-ndk-r16b-darwin-x86_64.zip"
+    elif [[ ${UNAME} == "Linux" ]]; then
+        log "Download from https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zipp"
+    fi
     exit 1
 fi
 
-ln -fs "$HOST_SWIFT_BIN_PATH"/swift* "$TOOLCHAIN_PATH/usr/bin"
+clean() {
+    git -C $SCRIPT_ROOT clean -xdf
+}
 
-# Make a hardlink (not symlink!) to `swift` to make the compiler think it's in this install path
-# This allows it to find the Android swift stdlib in $TOOLCHAIN_PATH/usr/lib/swift/android
-ln -f "$HOST_SWIFT_BIN_PATH/swift" "$TOOLCHAIN_PATH/usr/bin/swiftc"
+rm -rf $SCRIPT_ROOT/temp
+mkdir -p $SCRIPT_ROOT/temp
+cd $SCRIPT_ROOT/temp
+
+downloadArtifacts() {
+    log "Downloading Toolchain Artifacts..."
+
+    mkdir -p $SCRIPT_ROOT/temp
+    cd $SCRIPT_ROOT/temp
+
+    BASEPATH="https://swift-toolchain-artifacts.flowkeycdn.com"
+    VERSION="20200112.01"
+
+    log "Extracting Toolchain Artifacts..."
+    curl -JO ${BASEPATH}/${VERSION}/${UNAME}.zip
+    unzip -qq $SCRIPT_ROOT/temp/${UNAME}.zip
+    mv $SCRIPT_ROOT/temp/${UNAME}/* $SCRIPT_ROOT
+}
+
+setup() {
+    # fix ndk paths of downloaded android sdks
+    sed -i -e s~C:/Microsoft/AndroidNDK64/android-ndk-r16b~${ANDROID_NDK_PATH}~g $SCRIPT_ROOT/Android.sdk-*/usr/lib/swift/android/*/glibc.modulemap
+
+    HOST_SWIFT_BIN_PATH="$PATH_TO_SWIFT_TOOLCHAIN/usr/bin"
+    if [ ! -f "$HOST_SWIFT_BIN_PATH/swiftc" ]; then
+        log "Couldn't find swift in ${HOST_SWIFT_BIN_PATH}"
+        exit 1
+    fi
+
+    for arch in armeabi-v7a arm64-v8a x86_64
+    do
+        ANDROID_SDK="${SCRIPT_ROOT}/Android.sdk-$arch"
+        TOOLCHAIN_BIN_DIR="${ANDROID_SDK}/usr/bin"
+        mkdir -p "${TOOLCHAIN_BIN_DIR}"
+        ln -fs "$HOST_SWIFT_BIN_PATH"/swift* "${TOOLCHAIN_BIN_DIR}"
+
+        # Make a hardlink (not symlink!) to `swift` to make the compiler think it's in this install path
+        # This allows it to find the Android swift stdlib in ${SCRIPT_ROOT}/usr/lib/swift/android
+        ln -f "$HOST_SWIFT_BIN_PATH/swift" "${TOOLCHAIN_BIN_DIR}/swiftc"
+    done
+
+    rm -rf $SCRIPT_ROOT/temp/
+    log "Setup finished"
+}
+
+if [[ $1 = "--clean" ]]; then
+    log "Let's start from scratch ..."
+    clean
+fi
+
+if [[ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]] || [[ ! -d $SCRIPT_ROOT/Android.sdk-armeabi-v7a ]] || [[ ! -f $SCRIPT_ROOT/libs/armeabi-v7a/libicuuc64.so ]]; then
+    clean
+    downloadArtifacts
+fi
+
+setup
+
+rm -rf $SCRIPT_ROOT/temp

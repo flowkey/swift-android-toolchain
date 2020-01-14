@@ -1,5 +1,5 @@
 # swift-android-toolchain
-Build Swift for Android from your Mac
+Build Swift for Android from Mac and Linux
 
 
 ## Installation
@@ -7,7 +7,7 @@ Build Swift for Android from your Mac
 ### For use within a specific project
 
 1. Add `swift-android-toolchain` as a git submodule
-2. Use `./path-to-submodule/sr` whereever needed
+2. Use `./path-to-submodule/swift-build.sh` whereever needed
 
 [UIKit-cross-platform](https://github.com/flowkey/UIKit-cross-platform) uses this method (along with the Android Studio integration, below).
 
@@ -20,41 +20,41 @@ Build Swift for Android from your Mac
 
 ## Usage
 
-### In Android Studio
+### In Android Studio / Gradle
 
-In your project’s `CMakeLists.txt`, add the following code after the `cmake_minimum_required(VERSION x.y.z)` declaration.
-
+You probably want Gradle to compile your native sources automatically when building the android app. In order to archieve this, you have to create another `CMakeLists.txt` file and reference it from `app/build.gradle`.
 
 ```
-set(SwiftPM_DIR ./path/to/swift-android-toolchain) # can be a relative path (e.g. a git submodule)
-find_package(SwiftPM REQUIRED)
+externalNativeBuild {
+    cmake {
+        version "3.16.2"
+        path "CMakeLists.txt" // android/app/src/CMakeLists.txt
+    }
+}
+```
 
-# Minimal Example:
-add_swiftpm_library(DemoLibrary # Name of the Swift Package Manager 'Product' as listed in Package.swift
-    # Directory containing Package.swift. Don't include the 'Package.swift' suffix:
-    PROJECT_DIRECTORY ./path/to/swift/package
-)
+In `android/app/src/CMakeLists.txt`, add the following code after the `cmake_minimum_required(VERSION x.y.z)` declaration.
 
-# Advanced example (based on what we use to build UIKit-cross-platform):
-add_swiftpm_library(UIKit
-    PROJECT_DIRECTORY ./path/to/swift/package # See above
-    # Optional space-separated list of Swift Product dependencies (built using add_swiftpm_library). Swift corelibs (e.g. Foundation, Dispatch) are implicitly available:
-    PROJECT_DEPENDENCIES JNI
-    # Optional C Flags as space-delimited array:
-    C_FLAGS -I${UIKIT_DIRECTORY}/SDL/SDL2/include
-    # Optionally linked external libraries, 'log', and 'android' are common. Added to the build's linker flags via '-l{LIBRARY_NAME}':
-    LINK_LIBS dl GLESv1_CM GLESv2 log android
-    # Optional list of clang module maps to include (transitively) in the SwiftPM build. Useful for making C public headers available to your Swift code:
-    MODULE_MAPS SDL/SDL2/include/module.modulemap SDL/SDL_ttf/include/module.modulemap SDL/sdl-gpu/include/module.modulemap
+```
+# destination of project level CMakeLists.txt for building native sources
+get_filename_component(PROJECT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../ ABSOLUTE)
+
+# path to swift-android-toolchain
+set(BuildSwiftProject_DIR ../../swift-android-toolchain)
+find_package(BuildSwiftProject REQUIRED)
+
+build_swift_project(
+    PROJECT_DIRECTORY ${PROJECT_DIRECTORY}
 )
 ```
+Check out [getting-started](https://github.com/flowkey/UIKit-cross-platform/tree/master/samples/getting-started) for a working example.
+
 
 ### From the command line
 
-- `sr build`: build via SwiftPM for Android
-- `sr swiftc`: compile individual Swift files for Android. Builds a `.so` library by default but advanced users can build executables and run them on rooted devices.
-- `sr copylibs (destination)`: copy Swift libs from local Swift installation to `destination` or to the current directory if none specified. Not needed if using the Android Studio integration (below).
-
+```bash
+ANDROID_ABI="armeabi-v7a" CMAKE_BUILD_TYPE="Debug" swift-build.sh
+```
 
 ## Credits
 

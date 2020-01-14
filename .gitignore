@@ -11,3 +11,8 @@ usr/bin
 # Other files:
 .DS_Store
 
+# toolchain artifacts
+temp
+*.xctoolchain
+Android.sdk-*
+libs
