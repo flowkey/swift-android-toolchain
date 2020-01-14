@@ -35,17 +35,12 @@ downloadArtifacts() {
     cd $SCRIPT_ROOT/temp
 
     BASEPATH="https://swift-toolchain-artifacts.flowkeycdn.com"
-    VERSION="20200112.1"
+    VERSION="20200112.01"
 
+    log "Extracting Toolchain Artifacts..."
     curl -JO ${BASEPATH}/${VERSION}/${UNAME}.zip
     unzip -qq $SCRIPT_ROOT/temp/${UNAME}.zip
-
-    mv $SCRIPT_ROOT/temp/${UNAME}/swift-flowkey.xctoolchain $SCRIPT_ROOT
-    mv $SCRIPT_ROOT/temp/${UNAME}/Android.sdk-* $SCRIPT_ROOT
-
-    mv $SCRIPT_ROOT/temp/${UNAME}/libs/armeabi-v7a/*.so $SCRIPT_ROOT/libs/armeabi-v7a
-    mv $SCRIPT_ROOT/temp/${UNAME}/libs/arm64-v8a/*.so $SCRIPT_ROOT/libs/arm64-v8a
-    mv $SCRIPT_ROOT/temp/${UNAME}/libs/x86_64/*.so $SCRIPT_ROOT/libs/x86_64
+    mv $SCRIPT_ROOT/temp/${UNAME}/* $SCRIPT_ROOT
 }
 
 setup() {
