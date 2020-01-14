@@ -20,11 +20,6 @@ if [[ ! ${ANDROID_NDK_PATH} ]]; then
     exit 1
 fi
 
-if [[ $1 = "--clean" ]]; then
-    log "Let's start from scratch ..."
-    clean
-fi
-
 clean() {
     git -C $SCRIPT_ROOT clean -xdf
 }
@@ -78,6 +73,11 @@ setup() {
     rm -rf $SCRIPT_ROOT/temp/
     log "Setup finished"
 }
+
+if [[ $1 = "--clean" ]]; then
+    log "Let's start from scratch ..."
+    clean
+fi
 
 if [[ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]] || [[ ! -d $SCRIPT_ROOT/Android.sdk-armeabi-v7a ]] || [[ ! -f $SCRIPT_ROOT/libs/armeabi-v7a/libicuuc64.so ]]; then
     clean
