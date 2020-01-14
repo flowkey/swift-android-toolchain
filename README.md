@@ -47,7 +47,7 @@ build_swift_project(
     PROJECT_DIRECTORY ${PROJECT_DIRECTORY}
 )
 ```
-Checkout [getting-started](https://github.com/flowkey/UIKit-cross-platform/tree/master/samples/getting-started) for a working example.
+Check out [getting-started](https://github.com/flowkey/UIKit-cross-platform/tree/master/samples/getting-started) for a working example.
 
 
 ### From the command line
