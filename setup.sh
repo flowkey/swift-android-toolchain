@@ -29,16 +29,15 @@ mkdir -p $SCRIPT_ROOT/temp
 cd $SCRIPT_ROOT/temp
 
 downloadArtifacts() {
-    log "Downloading Toolchain Artifacts..."
-
     mkdir -p $SCRIPT_ROOT/temp
     cd $SCRIPT_ROOT/temp
 
     BASEPATH="https://swift-toolchain-artifacts.flowkeycdn.com"
     VERSION="20200112.01"
 
-    log "Extracting Toolchain Artifacts..."
+    log "Downloading Toolchain Artifacts..."
     curl -JO ${BASEPATH}/${VERSION}/${UNAME}.zip
+    log "Extracting Toolchain Artifacts..."
     unzip -qq $SCRIPT_ROOT/temp/${UNAME}.zip
     mv $SCRIPT_ROOT/temp/${UNAME}/* $SCRIPT_ROOT
 }
