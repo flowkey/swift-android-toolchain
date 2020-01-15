@@ -11,7 +11,7 @@ file(WRITE .empty.c "") # we need to build *something*, even if it's an empty fi
 add_library(swiftBuildDummy SHARED .empty.c)
 add_dependencies(swiftBuildDummy allTarget)
 
-set(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs")
+set(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${ANDROID_ABI}")
 
 # Path to a file which will never be built by cmake and therefore never exists.
 # Referencing this file as dependency in `allTarget` ensures `swift-build.sh`
