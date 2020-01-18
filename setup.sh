@@ -33,7 +33,12 @@ downloadArtifacts() {
     cd $SCRIPT_ROOT/temp
 
     BASEPATH="https://swift-toolchain-artifacts.flowkeycdn.com"
-    VERSION="20200112.01"
+
+    if [[ ${UNAME} == "Darwin" ]]; then
+        VERSION="20200112.01"
+    elif [[ ${UNAME} == "Linux" ]]; then
+        VERSION="stable_2"
+    fi
 
     log "Downloading Toolchain Artifacts..."
     curl -JO ${BASEPATH}/${VERSION}/${UNAME}.zip
