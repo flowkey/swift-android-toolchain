@@ -29,7 +29,8 @@ configure() {
         -DCMAKE_Swift_COMPILER_FORCED=TRUE \
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${LIBRARY_OUTPUT_DIRECTORY} \
         ${PROJECT_DIRECTORY}
-     echo "Finished configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
+    
+    echo "Finished configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
 build() {
@@ -80,7 +81,6 @@ mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
 if [[ $CONFIGURE ]]; then
-    echo "config only lol"
     configure
     exit 0
 fi
