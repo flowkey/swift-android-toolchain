@@ -21,10 +21,10 @@ PATH="${ANDROID_NDK_PATH}/toolchains/arm-linux-androideabi-4.9/prebuilt/${LOWERC
 
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
+
     $SWIFT_ANDROID_TOOLCHAIN_PATH/setup.sh
     cmake \
         -G Ninja \
-        -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
         -DANDROID_ABI=${ANDROID_ABI} \
         -DANDROID_PLATFORM=android-21 \
         -DANDROID_NDK="${ANDROID_NDK_PATH}" \
@@ -34,17 +34,19 @@ configure() {
         -DCMAKE_Swift_COMPILER="${ANDROID_SDK}/usr/bin/swiftc" \
         -DCMAKE_Swift_COMPILER_FORCED=TRUE \
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${LIBRARY_OUTPUT_DIRECTORY} \
-        ${PROJECT_DIRECTORY}
+        -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+        -S ${PROJECT_DIRECTORY} \
+        -B ${BUILD_DIR}
     
     echo "Finished configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
 build() {
-    # reconfigure when build dir is empty
-    # ls ${BUILD_DIR}/* > /dev/null 2>&1 || configure
+    # reconfigure when build dir does not exist empty
+    [[ -d ${BUILD_DIR} ]] || configure
 
     echo "Compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
-    cmake --build . #--verbose
+    cmake --build ${BUILD_DIR} #--verbose
 
     # Install stdlib etc. into output directory
     cp "${ANDROID_SDK}/usr/lib/swift/android"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
@@ -65,9 +67,6 @@ readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTO
 # You need a different SDK per arch, e.g. swift-android-toolchain/Android.sdk-armeabi-v7a/
 readonly ANDROID_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH/Android.sdk-${ANDROID_ABI}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
-
-mkdir -p $BUILD_DIR
-cd $BUILD_DIR
 
 for arg in "$@"
 do
