@@ -34,7 +34,8 @@ configure() {
 }
 
 build() {
-    ls ${BUILD_DIR}/* > /dev/null 2>&1 || configure # reconfigure when build dir is empty
+    # reconfigure when build dir is empty
+    ls ${BUILD_DIR}/* > /dev/null 2>&1 || configure
 
     echo "Compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
     cmake --build . #--verbose
@@ -47,22 +48,17 @@ build() {
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
-while getopts ":cp:" opt; do
-    case ${opt} in
-    p )
-        PROJECT_DIRECTORY=$OPTARG
-    ;;
-    c )
-        CONFIGURE=true
-    ;;
-    \? )
-        echo "Invalid option: $OPTARG" 1>&2
-        exit 1
-    ;;
-    : )
-        echo "Invalid option: $OPTARG requires an argument" 1>&2
-        exit 1
-    ;;
+for arg in "$@"
+do
+    case $arg in
+        -c|--configure)
+            CONFIGURE=true
+            shift
+        ;;
+        *)
+            PROJECT_DIRECTORY=$1
+            shift
+        ;;
     esac
 done
 
