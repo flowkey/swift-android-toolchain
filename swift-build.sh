@@ -8,6 +8,12 @@ then
     exit 1
 fi
 
+if [[ ! ${ANDROID_ABI} ]]
+then
+    echo "Please define ANDROID_ABI"
+    exit 1
+fi
+
 # Add `ld.gold` to PATH
 # This is weird because it looks like it's the armv7a ld.gold but it seems to support all archs
 LOWERCASE_UNAME=`uname | tr '[:upper:]' '[:lower:]'`
@@ -35,7 +41,7 @@ configure() {
 
 build() {
     # reconfigure when build dir is empty
-    ls ${BUILD_DIR}/* > /dev/null 2>&1 || configure
+    # ls ${BUILD_DIR}/* > /dev/null 2>&1 || configure
 
     echo "Compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
     cmake --build . #--verbose
@@ -48,24 +54,11 @@ build() {
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
-for arg in "$@"
-do
-    case $arg in
-        -c|--configure)
-            CONFIGURE=true
-            shift
-        ;;
-        *)
-            PROJECT_DIRECTORY=$1
-            shift
-        ;;
-    esac
-done
-
 readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
 readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT}"
 
-readonly PROJECT_DIRECTORY=${PROJECT_DIRECTORY:-$PWD} 
+for LAST_ARGUMENT in $@; do :; done
+readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
 readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 
@@ -76,9 +69,14 @@ readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-if [[ $CONFIGURE ]]; then
-    configure
-    exit 0
-fi
+for arg in "$@"
+do
+    case $arg in
+        -c|--configure)
+            configure
+            exit 0
+        ;;
+    esac
+done
 
 build
