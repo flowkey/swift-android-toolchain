@@ -2,16 +2,15 @@
 
 set -e
 
-PROJECT_DIRECTORY=${1:-$PWD}
-echo "building $PROJECT_DIRECTORY"
-
-SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
-SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT}"
-LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
-
 if [[ ! ${ANDROID_NDK_PATH} ]]
 then
     echo "Please define ANDROID_NDK_PATH"
+    exit 1
+fi
+
+if [[ ! ${ANDROID_ABI} ]]
+then
+    echo "Please define ANDROID_ABI"
     exit 1
 fi
 
@@ -20,23 +19,12 @@ fi
 LOWERCASE_UNAME=`uname | tr '[:upper:]' '[:lower:]'`
 PATH="${ANDROID_NDK_PATH}/toolchains/arm-linux-androideabi-4.9/prebuilt/${LOWERCASE_UNAME}-x86_64/arm-linux-androideabi/bin:$PATH"
 
-build() {
-    CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
-    echo "Compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
-
-    BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
-    # rm -rf $BUILD_DIR
-    mkdir -p $BUILD_DIR
-    cd $BUILD_DIR
-
-    # You need a different SDK per arch, e.g. swift-android-toolchain/Android.sdk-armeabi-v7a/
-    export ANDROID_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH/Android.sdk-${ANDROID_ABI}"
+configure() {
+    echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 
     $SWIFT_ANDROID_TOOLCHAIN_PATH/setup.sh
-
     cmake \
         -G Ninja \
-        -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
         -DANDROID_ABI=${ANDROID_ABI} \
         -DANDROID_PLATFORM=android-21 \
         -DANDROID_NDK="${ANDROID_NDK_PATH}" \
@@ -46,9 +34,19 @@ build() {
         -DCMAKE_Swift_COMPILER="${ANDROID_SDK}/usr/bin/swiftc" \
         -DCMAKE_Swift_COMPILER_FORCED=TRUE \
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${LIBRARY_OUTPUT_DIRECTORY} \
-        ${PROJECT_DIRECTORY}
+        -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
+        -S ${PROJECT_DIRECTORY} \
+        -B ${BUILD_DIR}
+    
+    echo "Finished configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
+}
 
-    cmake --build . #--verbose
+build() {
+    # reconfigure when build dir does not exist empty
+    [[ -d ${BUILD_DIR} ]] || configure
+
+    echo "Compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
+    cmake --build ${BUILD_DIR} #--verbose
 
     # Install stdlib etc. into output directory
     cp "${ANDROID_SDK}/usr/lib/swift/android"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
@@ -57,5 +55,27 @@ build() {
 
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
+
+readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
+readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT}"
+
+for LAST_ARGUMENT in $@; do :; done
+readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
+readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
+readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
+
+# You need a different SDK per arch, e.g. swift-android-toolchain/Android.sdk-armeabi-v7a/
+readonly ANDROID_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH/Android.sdk-${ANDROID_ABI}"
+readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
+
+for arg in "$@"
+do
+    case $arg in
+        -c|--configure)
+            configure
+            exit 0
+        ;;
+    esac
+done
 
 build
