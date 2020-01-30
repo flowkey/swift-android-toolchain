@@ -10,7 +10,7 @@ log() {
     echo "[swift-android-toolchain] $*"
 }
 
-if [[ ! ${ANDROID_NDK_PATH} ]]; then
+if [[ ! ${ANDROID_NDK_PATH} ]] || [[ ! `cat "$ANDROID_NDK_PATH/changelog.md" | grep "r16b"` ]]; then
     log "Please define ANDROID_NDK_PATH and point to your local version of ndk-r16b"
     if [[ ${UNAME} == "Darwin" ]]; then
         log "Download from https://dl.google.com/android/repository/android-ndk-r16b-darwin-x86_64.zip"
