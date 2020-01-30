@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.6)
 
 # Cache the toolchain's absolute path for later use
 get_filename_component(SWIFT_TOOLCHAIN_ROOT ${CMAKE_CURRENT_LIST_DIR} ABSOLUTE)
