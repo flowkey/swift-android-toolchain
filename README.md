@@ -1,30 +1,28 @@
 # swift-android-toolchain
-Build Swift for Android from Mac and Linux
 
+Build Swift for Android from Mac and Linux
 
 ## Installation
 
 ### For use within a specific project
 
 1. Add `swift-android-toolchain` as a git submodule
-2. Use `./path-to-submodule/swift-build.sh` whereever needed
+2. Use `./path-to-submodule/swift-build.sh` wherever needed
 
 [UIKit-cross-platform](https://github.com/flowkey/UIKit-cross-platform) uses this method (along with the Android Studio integration, below).
-
 
 ### For use globally from the command line
 
 1. Clone the repo
 1. Add the cloned destination to your `PATH` environment variable (e.g. in `~/.bash_profile` or equivalent)
 
-
 ## Usage
 
 ### In Android Studio / Gradle
 
-You probably want Gradle to compile your native sources automatically when building the android app. In order to archieve this, you have to create another `CMakeLists.txt` file and reference it from `app/build.gradle`.
+You probably want Gradle to compile your native sources automatically when building the android app. In order to achieve this, you have to create another `CMakeLists.txt` file and reference it from `app/build.gradle`.
 
-```
+```Gradle
 externalNativeBuild {
     cmake {
         version "3.16.2"
@@ -35,7 +33,7 @@ externalNativeBuild {
 
 In `android/app/src/CMakeLists.txt`, add the following code after the `cmake_minimum_required(VERSION x.y.z)` declaration.
 
-```
+```CMake
 # destination of project level CMakeLists.txt for building native sources
 get_filename_component(PROJECT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../ ABSOLUTE)
 
@@ -47,8 +45,8 @@ build_swift_project(
     PROJECT_DIRECTORY ${PROJECT_DIRECTORY}
 )
 ```
-Check out [getting-started](https://github.com/flowkey/UIKit-cross-platform/tree/master/samples/getting-started) for a working example.
 
+Check out [getting-started](https://github.com/flowkey/UIKit-cross-platform/tree/master/samples/getting-started) for a working example.
 
 ### From the command line
 
