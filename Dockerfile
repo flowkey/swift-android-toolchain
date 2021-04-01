@@ -4,17 +4,8 @@ MAINTAINER flowkey
 RUN apt-get update && \
     apt-get install --yes \
         clang build-essential unzip wget lsof vim  \
-        openjdk-8-jdk jq curl git rubygems ruby-dev && \
+        openjdk-8-jdk jq curl git && \
     rm -rf /var/lib/apt/lists/*
-
-# fastlane
-RUN gem install fastlane -NV
-
-# node
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g npm@6.x.x && \
-    node -v && npm -v
 
 # android
 ARG sdk_version=sdk-tools-linux-4333796.zip
@@ -31,9 +22,7 @@ ENV PATH=${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platfor
 RUN yes | sdkmanager --licenses && sdkmanager --update && \
     sdkmanager \
         "tools" \
-        "platform-tools" \
-        "build-tools;28.0.3" \
-        "platforms;android-28"
+        "platform-tools"
 
 # install cmake
 RUN curl -LOJ https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz && \
@@ -55,8 +44,7 @@ RUN curl -LOJ https://dl.google.com/android/repository/android-ndk-r16b-linux-x8
 ENV ANDROID_NDK_PATH $ANDROID_HOME/ndk-bundle
 
 # setup swift android toolchain
-ADD setup.sh libs/ cmake_caches.cmake /opt/swift-android-toolchain/
-ADD libs /opt/swift-android-toolchain/libs/
+ADD setup.sh cmake_caches.cmake /opt/swift-android-toolchain/
 RUN chmod +x /opt/swift-android-toolchain/setup.sh
 RUN /opt/swift-android-toolchain/setup.sh
 ENV SWIFT_ANDROID_TOOLCHAIN_PATH /opt/swift-android-toolchain
