@@ -31,7 +31,7 @@ configure() {
         -DSWIFT_SDK="${ANDROID_SDK}" \
         -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake" \
         -C "${SWIFT_ANDROID_TOOLCHAIN_PATH}/cmake_caches.cmake" \
-        -DCMAKE_Swift_COMPILER="${ANDROID_SDK}/usr/bin/swiftc" \
+        -DCMAKE_Swift_COMPILER="$HOME/Downloads/swift-android-toolchain/usr/bin/swiftc-arm-linux-androideabi" \
         -DCMAKE_Swift_COMPILER_FORCED=TRUE \
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${LIBRARY_OUTPUT_DIRECTORY} \
         -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
@@ -49,9 +49,9 @@ build() {
     cmake --build ${BUILD_DIR} #--verbose
 
     # Install stdlib etc. into output directory
-    cp "${ANDROID_SDK}/usr/lib/swift/android"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
-    cp "${SWIFT_ANDROID_TOOLCHAIN_PATH}/libs/${ANDROID_ABI}"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
-    cp "${ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/${ANDROID_ABI}/libc++_shared.so" "${LIBRARY_OUTPUT_DIRECTORY}"
+ #   cp "${ANDROID_SDK}/usr/lib/swift/android"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
+ #   cp "${SWIFT_ANDROID_TOOLCHAIN_PATH}/libs/${ANDROID_ABI}"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
+ #   cp "${ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/${ANDROID_ABI}/libc++_shared.so" "${LIBRARY_OUTPUT_DIRECTORY}"
 
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
@@ -65,7 +65,7 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 
 # You need a different SDK per arch, e.g. swift-android-toolchain/Android.sdk-armeabi-v7a/
-readonly ANDROID_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH/Android.sdk-${ANDROID_ABI}"
+readonly ANDROID_SDK="/Users/michaelknoch/Downloads/swift-android-toolchain"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
 for arg in "$@"
