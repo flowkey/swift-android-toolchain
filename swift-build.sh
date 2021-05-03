@@ -72,7 +72,6 @@ build() {
 readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
 readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT}"
 
-
 for LAST_ARGUMENT in $@; do :; done
 readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
 readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
