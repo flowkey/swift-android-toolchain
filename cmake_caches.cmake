@@ -18,7 +18,7 @@ elseif(ANDROID_ABI STREQUAL x86_64)
   set(CMAKE_SYSTEM_PROCESSOR x86_64)
   set(ANDROID_TOOLCHAIN_NAME x86_64-linux-android)
   set(ANDROID_TOOLCHAIN_ROOT ${ANDROID_ABI})
-  set(ANDROID_LLVM_TRIPLE x86_64-none-linux-android)
+  set(ANDROID_LLVM_TRIPLE x86_64-unknown-linux-android)
   set(ANDROID_HEADER_TRIPLE x86_64-linux-android)
 endif()
 
