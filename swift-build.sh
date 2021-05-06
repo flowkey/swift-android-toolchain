@@ -2,11 +2,7 @@
 
 set -e
 
-if [[ ! ${ANDROID_NDK_PATH} ]]
-then
-    echo "Please define ANDROID_NDK_PATH"
-    exit 1
-fi
+
 
 if [[ ! ${ANDROID_ABI} ]]
 then
@@ -17,6 +13,7 @@ fi
 # Add `ld.gold` to PATH
 # This is weird because it looks like it's the armv7a ld.gold but it seems to support all archs
 LOWERCASE_UNAME=`uname | tr '[:upper:]' '[:lower:]'`
+ANDROID_NDK_PATH=/usr/local/ndk/21.3.6528147
 PATH="${ANDROID_NDK_PATH}/toolchains/arm-linux-androideabi-4.9/prebuilt/${LOWERCASE_UNAME}-x86_64/arm-linux-androideabi/bin:$PATH"
 
 configure() {

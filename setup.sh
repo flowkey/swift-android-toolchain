@@ -10,11 +10,6 @@ log() {
     echo "[swift-android-toolchain] $*"
 }
 
-if [[ ! ${ANDROID_NDK_PATH} ]] || [[ ! `cat "$ANDROID_NDK_PATH/changelog.md" | grep "r21b"` ]]; then
-    log "Please define ANDROID_NDK_PATH and point to your local version of r21b"
-    exit 1
-fi
-
 clean() {
     git -C $SCRIPT_ROOT clean -xdf
 }
