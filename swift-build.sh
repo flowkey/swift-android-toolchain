@@ -13,7 +13,13 @@ fi
 # Add `ld.gold` to PATH
 # This is weird because it looks like it's the armv7a ld.gold but it seems to support all archs
 LOWERCASE_UNAME=`uname | tr '[:upper:]' '[:lower:]'`
+
 ANDROID_NDK_PATH=/usr/local/ndk/21.3.6528147
+if [[ ! `cat "$ANDROID_NDK_PATH/changelog.md" | grep "r21b"` ]]; then
+    log "missing ndk in /usr/local/ndk/21.3.6528147"
+    exit 1
+fi
+
 PATH="${ANDROID_NDK_PATH}/toolchains/arm-linux-androideabi-4.9/prebuilt/${LOWERCASE_UNAME}-x86_64/arm-linux-androideabi/bin:$PATH"
 
 configure() {
