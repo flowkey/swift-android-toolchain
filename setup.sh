@@ -2,16 +2,15 @@
 
 set -e
 
-SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
-PATH_TO_SWIFT_TOOLCHAIN="$SCRIPT_ROOT/swift-android.xctoolchain"
-UNAME=`uname`
+readonly SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
+readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT/swift-android.xctoolchain}"
 
 log() {
     echo "[swift-android-toolchain] $*"
 }
 
 clean() {
-    git -C $SCRIPT_ROOT clean -xdf
+    rm -rf $SCRIPT_ROOT/temp $SCRIPT_ROOT/swift-android.xctoolchain
 }
 
 rm -rf $SCRIPT_ROOT/temp
@@ -23,7 +22,7 @@ downloadToolchain() {
     cd $SCRIPT_ROOT/temp
 
     log "Downloading Toolchain..."
-    curl -LO https://github.com/vgorloff/swift-everywhere-toolchain/releases/download/1.0.66/swift-android-toolchain.tar.gz
+    curl -LO https://swift-toolchain-artifacts.flowkeycdn.com/swift-android-5.4.tar.gz
     log "Extracting Toolchain..."
     tar -xzf $SCRIPT_ROOT/temp/*.tar.gz
     mv $SCRIPT_ROOT/temp/swift-android-toolchain $SCRIPT_ROOT/swift-android.xctoolchain
@@ -39,7 +38,7 @@ if [[ $1 = "--clean" ]]; then
     clean
 fi
 
-if [[ ! -d $PATH_TO_SWIFT_TOOLCHAIN ]] || [[ ! -d $SCRIPT_ROOT/swift-android.xctoolchain ]]; then
+if [[ ! -d $SWIFT_ANDROID_TOOLCHAIN_PATH ]]; then
     clean
     downloadToolchain
 fi
