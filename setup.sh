@@ -22,7 +22,7 @@ downloadToolchain() {
     cd $SCRIPT_ROOT/temp
 
     log "Downloading Toolchain..."
-    curl -LO https://swift-toolchain-artifacts.flowkeycdn.com/swift-android-5.3.tar.gz
+    curl -LO https://swift-toolchain-artifacts.flowkeycdn.com/swift-android-5.4.1.tar.gz
     log "Extracting Toolchain..."
     tar -xzf $SCRIPT_ROOT/temp/*.tar.gz
     mv $SCRIPT_ROOT/temp/swift-android-toolchain $SCRIPT_ROOT/swift-android.xctoolchain
