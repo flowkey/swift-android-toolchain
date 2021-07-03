@@ -8,9 +8,9 @@ then
     exit 1
 fi
 
-ANDROID_NDK_PATH=/usr/local/ndk/21.3.6528147
+ANDROID_NDK_PATH=/usr/local/ndk/21.4.7075529
 if [[ ! `cat "$ANDROID_NDK_PATH/CHANGELOG.md"` ]]; then
-    echo "missing ndk in /usr/local/ndk/21.3.6528147"
+    echo "missing ndk in /usr/local/ndk/21.4.7075529"
     exit 1
 fi
 
