@@ -2,17 +2,20 @@
 
 set -e
 
+ANDROID_NDK_PATH=/usr/local/ndk/21.4.7075529
+if [[ ! `cat "$ANDROID_NDK_PATH/CHANGELOG.md" 2> /dev/null` ]]; then
+    echo "no ndk found under /usr/local/ndk/21.4.7075529"
+    echo "download ndk 21.4.7075529 and create a symlink in '/usr/local/ndk/21.4.7075529' ponting to it"
+    echo "https://dl.google.com/android/repository/android-ndk-r21e-darwin-x86_64.zip"
+    exit 1
+fi
+
 if [[ ! ${ANDROID_ABI} ]]
 then
     echo "Please define ANDROID_ABI"
     exit 1
 fi
 
-ANDROID_NDK_PATH=/usr/local/ndk/21.4.7075529
-if [[ ! `cat "$ANDROID_NDK_PATH/CHANGELOG.md"` ]]; then
-    echo "missing ndk in /usr/local/ndk/21.4.7075529"
-    exit 1
-fi
 
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
