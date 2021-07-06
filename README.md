@@ -1,6 +1,6 @@
 # swift-android-toolchain
 
-Build Swift for Android from Mac and Linux
+Build Swift for Android from Mac
 
 ## Installation
 
