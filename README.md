@@ -1,6 +1,6 @@
 # swift-android-toolchain
 
-Build Swift for Android from Mac and Linux
+Build Swift for Android from Mac
 
 ## Installation
 
@@ -64,4 +64,4 @@ Running the [`fixCatalinaPermissions.sh`](fixCatalinaPermissions.sh) script, aft
 
 Making this toolchain was only possible by standing on the shoulders of giants.
 
-Many thanks to [Gonzalo Lorralde](https://github.com/gonzalolarralde) for [swifty-robot-environment](https://github.com/gonzalolarralde/swifty-robot-environment) and [John Holdsworth](https://github.com/johnno1962) for his [android_toolchain](https://github.com/SwiftJava/android_toolchain). And to the Swift community as a whole for their ongoing work at making the language great.
+Many thanks to [Vlad Gorlov](https://github.com/vgorloff) for his great work with the [swift-everywhere-toolchain](https://github.com/vgorloff/swift-everywhere-toolchain), [Gonzalo Lorralde](https://github.com/gonzalolarralde) for [swifty-robot-environment](https://github.com/gonzalolarralde/swifty-robot-environment) and [John Holdsworth](https://github.com/johnno1962) for his [android_toolchain](https://github.com/SwiftJava/android_toolchain). And to the Swift community as a whole for their ongoing work at making the language great.

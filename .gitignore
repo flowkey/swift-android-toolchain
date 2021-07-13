@@ -14,5 +14,3 @@ usr/bin
 # toolchain artifacts
 temp
 *.xctoolchain
-Android.sdk-*
-libs
