@@ -2,9 +2,11 @@
 
 set -e
 
-if [[ ! ${ANDROID_NDK_PATH} ]]
-then
-    echo "Please define ANDROID_NDK_PATH"
+ANDROID_NDK_PATH=/usr/local/ndk/21.4.7075529
+if [[ ! `cat "$ANDROID_NDK_PATH/CHANGELOG.md" 2> /dev/null` ]]; then
+    echo "no ndk found under /usr/local/ndk/21.4.7075529"
+    echo "download ndk 21.4.7075529 and create a symlink in '/usr/local/ndk/21.4.7075529' ponting to it"
+    echo "https://dl.google.com/android/repository/android-ndk-r21e-darwin-x86_64.zip"
     exit 1
 fi
 
@@ -14,24 +16,19 @@ then
     exit 1
 fi
 
-# Add `ld.gold` to PATH
-# This is weird because it looks like it's the armv7a ld.gold but it seems to support all archs
-LOWERCASE_UNAME=`uname | tr '[:upper:]' '[:lower:]'`
-PATH="${ANDROID_NDK_PATH}/toolchains/arm-linux-androideabi-4.9/prebuilt/${LOWERCASE_UNAME}-x86_64/arm-linux-androideabi/bin:$PATH"
 
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 
-    $SWIFT_ANDROID_TOOLCHAIN_PATH/setup.sh
     cmake \
         -G Ninja \
         -DANDROID_ABI=${ANDROID_ABI} \
         -DANDROID_PLATFORM=android-21 \
         -DANDROID_NDK="${ANDROID_NDK_PATH}" \
-        -DSWIFT_SDK="${ANDROID_SDK}" \
+        -DSWIFT_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH" \
         -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_PATH}/build/cmake/android.toolchain.cmake" \
-        -C "${SWIFT_ANDROID_TOOLCHAIN_PATH}/cmake_caches.cmake" \
-        -DCMAKE_Swift_COMPILER="${ANDROID_SDK}/usr/bin/swiftc" \
+        -C "${SCRIPT_ROOT}/cmake_caches.cmake" \
+        -DCMAKE_Swift_COMPILER="$SWIFT_ANDROID_TOOLCHAIN_PATH/usr/bin/swiftc-${ABI_SPECIFIC_POST_FIX}" \
         -DCMAKE_Swift_COMPILER_FORCED=TRUE \
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${LIBRARY_OUTPUT_DIRECTORY} \
         -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
@@ -41,6 +38,7 @@ configure() {
     echo "Finished configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
+
 build() {
     # reconfigure when build dir does not exist empty
     [[ -d ${BUILD_DIR} ]] || configure
@@ -48,25 +46,34 @@ build() {
     echo "Compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
     cmake --build ${BUILD_DIR} #--verbose
 
-    # Install stdlib etc. into output directory
-    cp "${ANDROID_SDK}/usr/lib/swift/android"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
-    cp "${SWIFT_ANDROID_TOOLCHAIN_PATH}/libs/${ANDROID_ABI}"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
-    cp "${ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/${ANDROID_ABI}/libc++_shared.so" "${LIBRARY_OUTPUT_DIRECTORY}"
+    $SWIFT_ANDROID_TOOLCHAIN_PATH/usr/bin/copy-libs-${ABI_SPECIFIC_POST_FIX} -output ${LIBRARY_OUTPUT_DIRECTORY}
 
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
 readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
-readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT}"
+readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT/swift-android.xctoolchain}"
+
+ABI_SPECIFIC_POST_FIX=""
+case $ANDROID_ABI in
+    arm64-v8a)
+        ABI_SPECIFIC_POST_FIX="aarch64-linux-android"
+        ;;
+    armeabi-v7a)
+        ABI_SPECIFIC_POST_FIX="arm-linux-androideabi"
+        ;;
+    x86_64)
+        ABI_SPECIFIC_POST_FIX="x86_64-linux-android"
+        ;;
+esac
 
 for LAST_ARGUMENT in $@; do :; done
 readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
 readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
-
-# You need a different SDK per arch, e.g. swift-android-toolchain/Android.sdk-armeabi-v7a/
-readonly ANDROID_SDK="$SWIFT_ANDROID_TOOLCHAIN_PATH/Android.sdk-${ANDROID_ABI}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
+
+$SCRIPT_ROOT/setup.sh
 
 for arg in "$@"
 do
