@@ -4,10 +4,10 @@
 ## due to executing libs from the NDK that we downloaded during setup.
 
 # common dependencies
-DEPENDENCIES=(clang clang++ as ld ld.gold *.dylib)
+DEPENDENCIES=(clang clang++ as ld ld.gold *.dylib llvm-strip)
 
 # for each architecture
-for ARCHITECTURE in arm-linux-androideabi aarch64-linux-android x86_64-linux-android;
+for ARCHITECTURE in armeabi-v7a arm-linux-androideabi aarch64-linux-android x86_64-linux-android;
 do
     for ARCH_DEPENDENCY in ranlib ar strip;
     do
