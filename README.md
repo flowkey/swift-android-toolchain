@@ -54,11 +54,11 @@ Check out [getting-started](https://github.com/flowkey/UIKit-cross-platform/tree
 ANDROID_ABI="armeabi-v7a" CMAKE_BUILD_TYPE="Debug" swift-build.sh
 ```
 
-#### For users on MacOS Catalina (10.15.x)
+#### MacOS file permissions
 
-Since use a downloaded version of the Android NDK in this build, MacOS Catalina complains about security issues. Running the build might show you alerts for every library from the NDK that is invoked by the build script, asking to grant permissions.
+Since we use downloaded versions of the swift toolchain and Android NDK in this build, MacOS complains about potential security issues. Running the build might show you alerts for every binarythat is invoked by the build script, asking to manually grant permissions.
 
-Running the [`fixCatalinaPermissions.sh`](fixCatalinaPermissions.sh) script, after setup, but before invoking the build, should resolve this issue.
+Running the [`fixMacOSPermissions.sh`](fixMacOSPermissions.sh) script, after setup, but before invoking the build, should resolve this issue.
 
 ## Credits
 
