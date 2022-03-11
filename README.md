@@ -56,7 +56,7 @@ ANDROID_ABI="armeabi-v7a" CMAKE_BUILD_TYPE="Debug" swift-build.sh
 
 #### MacOS file permissions
 
-Since we use downloaded versions of the swift toolchain and Android NDK in this build, MacOS complains about potential security issues. Running the build might show you alerts for every binarythat is invoked by the build script, asking to manually grant permissions.
+Since we use downloaded versions of the swift toolchain and Android NDK in this build, MacOS complains about potential security issues. Running the build might show you alerts for every binary that is invoked by the build script, asking to manually grant permissions.
 
 Running the [`fixMacOSPermissions.sh`](fixMacOSPermissions.sh) script, after setup, but before invoking the build, should resolve this issue.
 
