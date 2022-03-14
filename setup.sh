@@ -23,8 +23,8 @@ downloadToolchain() {
 
     log "Downloading Toolchain..."
 
-    # mirror of https://github.com/vgorloff/swift-everywhere-toolchain/releases/tag/1.0.71
-    TOOLCHAIN_PATH="https://swift-toolchain-artifacts.flowkeycdn.com/swift-android-5.4.2.tar.gz"
+    # mirror of https://github.com/vgorloff/swift-everywhere-toolchain/releases/tag/1.0.78
+    TOOLCHAIN_PATH="https://swift-toolchain-artifacts.flowkeycdn.com/swift-android-5.5.2.tar.gz"
 
     curl -LO $TOOLCHAIN_PATH
     log "Extracting Toolchain..."
