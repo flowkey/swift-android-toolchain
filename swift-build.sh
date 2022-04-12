@@ -17,6 +17,9 @@ then
 fi
 
 
+# prioritize NDKs clang over from /usr/bin/clang
+export PATH="/Users/michaelknoch/Library/Android/sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/darwin-x86_64/bin:$PATH"
+
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 
