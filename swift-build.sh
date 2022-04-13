@@ -17,6 +17,10 @@ then
 fi
 
 
+# Ensure clang from ndk is used when invoking `clang` without specific path.
+# Otherwise it executes `/usr/bin/clang` which references clang from xcode command line tools.
+export PATH="$ANDROID_NDK_PATH/toolchains/llvm/prebuilt/darwin-x86_64/bin:$PATH"
+
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 
