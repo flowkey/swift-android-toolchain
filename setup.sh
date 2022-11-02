@@ -60,8 +60,8 @@ fi
 if [[ ! -f "${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract" ]];
 then
     echo "Missing symlink '${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract'."
-    echo "Unfortunately we need sudo permissiosn to create it."
-    sudo ln -s swift ${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract
+    echo "We need 'sudo' permission to create it (just this once)."
+    sudo ln -s swift ${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract || exit 1
 fi
 
 downloadSdks
