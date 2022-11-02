@@ -32,27 +32,19 @@ endif()
 
 ######################################################################
 
-set(ANDROID_ABI_LINK_BASEPATH ${ANDROID_NDK}/toolchains/${ANDROID_TOOLCHAIN_ROOT}-4.9/prebuilt/${ANDROID_HOST_TAG})
-if(ANDROID_ABI STREQUAL armeabi-v7a)
-  set(ANDROID_LINKER_PATH_SUFFIX ${CMAKE_SYSTEM_PROCESSOR}/thumb)
-endif()
-set(ANDROID_LINKER_GCC_PATH ${ANDROID_ABI_LINK_BASEPATH}/lib/gcc/${ANDROID_TOOLCHAIN_NAME}/4.9.x/${ANDROID_LINKER_PATH_SUFFIX})
-set(ANDROID_LINKER_CXX_PATH ${ANDROID_ABI_LINK_BASEPATH}/${ANDROID_TOOLCHAIN_NAME}/lib/${ANDROID_LINKER_PATH_SUFFIX})
-
 # Make a list that we then convert to a (space-delimited) string, below
 set(SWIFT_FLAGS
     -g # always produce debug symbols
-    -sdk ${SWIFT_SDK}
-    -tools-directory ${SWIFT_SDK}/usr/bin
-    -Xcc --sysroot=${ANDROID_NDK}/sysroot
-    -Xlinker -L${ANDROID_NDK}/platforms/${ANDROID_PLATFORM}/arch-${ANDROID_SYSROOT_ABI}/usr/lib
-    -Xclang-linker -L${ANDROID_LINKER_GCC_PATH}
-    -Xclang-linker -L${ANDROID_LINKER_CXX_PATH}
-    -Xclang-linker --sysroot=${ANDROID_NDK}/platforms/${ANDROID_PLATFORM}/arch-${ANDROID_SYSROOT_ABI}
-    -Xclang-linker -nostdlib++
-    -Xlinker -L${SWIFT_SDK}/usr/lib/swift/android
-    #-v
+    -sdk ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/sysroot
+    -resource-dir ${SWIFT_SDK}/usr/lib/swift
+    -tools-directory ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/bin
+    # -v
 )
+
+file(CREATE_LINK
+    ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/lib64/clang/14.0.6
+    ${SWIFT_SDK}/usr/lib/swift/clang
+    SYMBOLIC)
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
     list(APPEND SWIFT_FLAGS -O)
@@ -61,4 +53,4 @@ endif()
 list(JOIN SWIFT_FLAGS " " SWIFT_FLAGS)
 set(CMAKE_Swift_FLAGS "${SWIFT_FLAGS}" CACHE INTERNAL "")
 
-set(CMAKE_Swift_COMPILER_TARGET "${ANDROID_LLVM_TRIPLE}" CACHE INTERNAL "")
+set(CMAKE_Swift_COMPILER_TARGET "${ANDROID_LLVM_TRIPLE}24" CACHE INTERNAL "")
