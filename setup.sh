@@ -4,6 +4,7 @@ set -e
 
 readonly SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
 readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
+readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
 
 log() {
     echo "[swift-android-toolchain] $*"
@@ -47,6 +48,20 @@ downloadSdks() {
 if [[ $1 = "--clean" ]]; then
     log "Let's start from scratch..."
     clean
+fi
+
+if [ ! -d ${TOOLCHAIN_PATH} ]
+then
+    echo "Please install the swift-5.7-RELEASE toolchain (or set TOOLCHAIN_PATH)"
+    echo "On Mac: https://download.swift.org/swift-5.7-release/xcode/swift-5.7-RELEASE/swift-5.7-RELEASE-osx.pkg"
+    exit 1
+fi
+
+if [[ ! -f "${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract" ]];
+then
+    echo "Missing symlink '${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract'."
+    echo "Unfortunately we need sudo permissiosn to create it."
+    sudo ln -s swift ${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract
 fi
 
 downloadSdks
