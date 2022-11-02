@@ -3,50 +3,50 @@
 set -e
 
 readonly SCRIPT_ROOT=$(cd "$(dirname "$0")"; pwd -P)
-readonly SWIFT_ANDROID_TOOLCHAIN_PATH="${SWIFT_ANDROID_TOOLCHAIN_PATH:-$SCRIPT_ROOT/swift-android.xctoolchain}"
+readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
 
 log() {
     echo "[swift-android-toolchain] $*"
 }
 
 clean() {
-    rm -rf $SCRIPT_ROOT/temp $SCRIPT_ROOT/swift-android.xctoolchain
+    rm -rf ${SDK_DIR}
 }
 
-rm -rf $SCRIPT_ROOT/temp
-mkdir -p $SCRIPT_ROOT/temp
-cd $SCRIPT_ROOT/temp
+downloadSdks() {
+    mkdir -p ${SDK_DIR}
+    cd ${SDK_DIR}
 
-downloadToolchain() {
-    mkdir -p $SCRIPT_ROOT/temp
-    cd $SCRIPT_ROOT/temp
+    for SDK in aarch64 armv7 x86_64
+    do
+        local SDK_DIRNAME=${SDK};
+        [ ${SDK} = "aarch64" ] && SDK_DIRNAME=arm64-v8a
+        [ ${SDK} = "armv7" ] && SDK_DIRNAME=armeabi-v7a
 
-    log "Downloading Toolchain..."
+        local ORIGINAL_FILENAME="swift-5.7-android-${SDK}-24-sdk"
 
-    # mirror of https://github.com/vgorloff/swift-everywhere-toolchain/releases/tag/1.0.78
-    TOOLCHAIN_PATH="https://swift-toolchain-artifacts.flowkeycdn.com/swift-android-5.5.2.tar.gz"
+        if [ ! -f "${ORIGINAL_FILENAME}.tar.xz" ]
+        then
+            log "Downloading ${SDK_DIRNAME} SDK..."
+            local SDK_URL_BASEPATH="https://github.com/buttaface/swift-android-sdk/releases/download/5.7"
+            curl -LO ${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}.tar.xz
+        fi
+        
+        if [ ! -d "${SDK_DIRNAME}" ]
+        then
+            log "Extracting ${SDK_DIRNAME} SDK..."
+            tar --extract --file ${ORIGINAL_FILENAME}.tar.xz
+            # rm ${ORIGINAL_FILENAME}.tar.xz
+            mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
+        fi
+    done
 
-    curl -LO $TOOLCHAIN_PATH
-    log "Extracting Toolchain..."
-    tar -xzf $SCRIPT_ROOT/temp/*.tar.gz
-    mv $SCRIPT_ROOT/temp/swift-android-toolchain $SCRIPT_ROOT/swift-android.xctoolchain
-}
-
-setup() {
-    rm -rf $SCRIPT_ROOT/temp/
-    log "Setup finished"
+    log "Done!"
 }
 
 if [[ $1 = "--clean" ]]; then
-    log "Let's start from scratch ..."
+    log "Let's start from scratch..."
     clean
 fi
 
-if [[ ! -d $SWIFT_ANDROID_TOOLCHAIN_PATH ]]; then
-    clean
-    downloadToolchain
-fi
-
-setup
-
-rm -rf $SCRIPT_ROOT/temp
+downloadSdks
