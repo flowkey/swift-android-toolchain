@@ -65,10 +65,22 @@ build() {
 
     function copyLib {
         local DESTINATION="${LIBRARY_OUTPUT_DIRECTORY}/`basename "$1"`"
-        if [ "$1" -nt "${DESTINATION}" ]; then cp -f "$1" "${DESTINATION}"; fi
+        if [ "$1" -nt "${DESTINATION}" ]
+        then
+            cp -f "$1" "${DESTINATION}"
+        fi
     }
 
-    for FILE_PATH in `find "${SWIFT_SDK_PATH}/usr/lib" -type f -iname *.so -print`
+    local LIB_FILES=`find "${SWIFT_SDK_PATH}/usr/lib" -type f -iname "*.so" -print`
+
+    # EXCLUDED_LIBS are optionally provided to script, e.g. from Gradle:
+    if [ ${#EXCLUDED_LIBS} != "0" ]
+    then
+        local EXCLUSIONS_STRING=`for EXCLUSION in ${EXCLUDED_LIBS}; do printf %s "-e ${EXCLUSION} "; done`
+        LIB_FILES=$(grep --invert-match ${EXCLUSIONS_STRING} <<< "$LIB_FILES")
+    fi
+
+    for FILE_PATH in ${LIB_FILES[@]}
     do
         copyLib "${FILE_PATH}"
     done
