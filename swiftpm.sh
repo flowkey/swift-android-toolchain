@@ -17,8 +17,6 @@ fi
 readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
 readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
 
-echo ${SCRIPT_ROOT}
-
 TMPFILE=$(mktemp)
 HOST=darwin-x86_64
 
@@ -82,3 +80,10 @@ ln -fs \
     ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang
 
 ${TOOLCHAIN_PATH}/usr/bin/swift build --destination "${TMPFILE}" $@
+
+if [ "$LIBRARY_OUTPUT_DIRECTORY" ]
+then
+    BIN_PATH=$(${TOOLCHAIN_PATH}/usr/bin/swift build --destination "${TMPFILE}" --show-bin-path $@)
+    mkdir -p ${LIBRARY_OUTPUT_DIRECTORY}
+    cp -f "${BIN_PATH}"/*.so "${LIBRARY_OUTPUT_DIRECTORY}"
+fi
