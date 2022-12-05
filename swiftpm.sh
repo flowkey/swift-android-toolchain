@@ -77,10 +77,6 @@ else # assume arm64
 EOF
 fi
 
-echo
-cat $TMPFILE
-echo
-
 ln -fs \
     ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
     ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang
