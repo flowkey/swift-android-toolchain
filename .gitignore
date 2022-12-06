@@ -8,3 +8,4 @@ usr/bin
 # toolchain artifacts
 temp
 sdk
+swiftpm-build

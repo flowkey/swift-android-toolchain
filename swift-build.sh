@@ -2,29 +2,8 @@
 
 set -e
 
-ANDROID_NDK_PATH=/usr/local/ndk/25.1.8937393
-if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
-    echo "no ndk found under /usr/local/ndk/25.1.8937393"
-    echo "download ndk 25.1.8937393 and create a symlink in '/usr/local/ndk/25.1.8937393' pointing to it"
-    exit 1
-fi
-
-if [[ ! ${ANDROID_ABI} ]]
-then
-    echo "Please define ANDROID_ABI"
-    exit 1
-fi
-
 readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
-readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
-
-for LAST_ARGUMENT in $@; do :; done
-readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
-readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
-readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
-readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
-
-readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/${ANDROID_ABI}"
+source "${SCRIPT_ROOT}/setup.sh"
 
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
@@ -54,7 +33,6 @@ configure() {
     echo "Finished configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
 
-
 build() {
     # reconfigure when build dir does not exist
     [[ -d ${BUILD_DIR} ]] || configure
@@ -63,29 +41,7 @@ build() {
     cmake --build ${BUILD_DIR} #--verbose
     echo finished build ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}
 
-    function copyLib {
-        local DESTINATION="${LIBRARY_OUTPUT_DIRECTORY}/`basename "$1"`"
-        if [ "$1" -nt "${DESTINATION}" ]
-        then
-            cp -f "$1" "${DESTINATION}"
-        fi
-    }
-
-    local LIB_FILES=`find "${SWIFT_SDK_PATH}/usr/lib" -type f -iname "*.so" -print`
-
-    # EXCLUDED_LIBS are optionally provided to script, e.g. from Gradle:
-    if [ ${#EXCLUDED_LIBS} != "0" ]
-    then
-        local EXCLUSIONS_STRING=`for EXCLUSION in ${EXCLUDED_LIBS}; do printf %s "-e ${EXCLUSION} "; done`
-        LIB_FILES=$(grep --invert-match ${EXCLUSIONS_STRING} <<< "$LIB_FILES")
-    fi
-
-    for FILE_PATH in ${LIB_FILES[@]}
-    do
-        copyLib "${FILE_PATH}"
-    done
-
-    copyLib "${ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/${ANDROID_ABI}/libc++_shared.so"
+    copyLibs()
 
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
@@ -100,5 +56,4 @@ do
     esac
 done
 
-${SCRIPT_ROOT}/setup.sh
 build
