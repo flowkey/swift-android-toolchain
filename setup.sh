@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-
-set -e
-
 ANDROID_NDK_PATH=/usr/local/ndk/25.1.8937393
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
     echo "no ndk found under /usr/local/ndk/25.1.8937393"
@@ -27,11 +23,12 @@ readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/${ANDROID_ABI}"
 readonly HOST=darwin-x86_64 # TODO: add more platforms
 
-copyLibs() {
+copySwiftDependencyLibs() {
     function copyLib {
         local DESTINATION="${LIBRARY_OUTPUT_DIRECTORY}/`basename "$1"`"
-        if [ true || "$1" -nt "${DESTINATION}" ]
+        if [ "$1" -nt "${DESTINATION}" ]
         then
+            mkdir -p "${LIBRARY_OUTPUT_DIRECTORY}"
             cp -f "$1" "${DESTINATION}"
         fi
     }
@@ -81,7 +78,7 @@ then
 fi
 
 downloadSdks() {
-    mkdir -p ${SDK_DIR}
+    [ ! -d ${SDK_DIR} ] && mkdir -p ${SDK_DIR}
     pushd ${SDK_DIR} > /dev/null
 
     for SDK in aarch64 armv7 x86_64
@@ -113,59 +110,18 @@ downloadSdks() {
 
 downloadSdks
 
-readonly DESTINATION_FILE="${SCRIPT_ROOT}/${ANDROID_ABI}.json"
-
-if [ ! -f "${DESTINATION_FILE}" ]; then
-if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
-    cat <<- EOF > "${DESTINATION_FILE}"
-    {
-        "version": 1,
-        "target": "armv7-unknown-linux-androideabi24",
-        "toolchain-bin-dir": "${TOOLCHAIN_PATH}/usr/bin",
-        "sdk": "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/sysroot",
-        "extra-cc-flags": ["-fPIC"],
-        "extra-swiftc-flags": [
-            "-resource-dir",
-            "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift",
-            "-tools-directory",
-            "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/bin",
-        ],
-        "extra-cpp-flags": ["-lstdc++"]
-    }
-EOF
-elif [ ${ANDROID_ABI} = "x86_64" ]; then
-    cat <<- EOF > "${DESTINATION_FILE}"
-    {
-        "version": 1,
-        "target": "x86_64-unknown-linux-android24",
-        "toolchain-bin-dir": "${TOOLCHAIN_PATH}/usr/bin",
-        "sdk": "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/sysroot",
-        "extra-cc-flags": ["-fPIC"],
-        "extra-swiftc-flags": [
-            "-resource-dir",
-            "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift",
-            "-tools-directory",
-            "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/bin",
-        ],
-        "extra-cpp-flags": ["-lstdc++"]
-    }
-EOF
-else # assume arm64
-    cat <<- EOF > "${DESTINATION_FILE}"
-    {
-        "version": 1,
-        "target": "aarch64-unknown-linux-android24",
-        "toolchain-bin-dir": "${TOOLCHAIN_PATH}/usr/bin",
-        "sdk": "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/sysroot",
-        "extra-cc-flags": ["-fPIC"],
-        "extra-swiftc-flags": [
-            "-resource-dir",
-            "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift",
-            "-tools-directory",
-            "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/bin"
-        ],
-        "extra-cpp-flags": ["-lstdc++"]
-    }
-EOF
+# dynamic resources
+if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang" ]
+then
+    ln -fs \
+        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
+        ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang
 fi
+
+# static resources
+if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang" ]
+then
+    ln -fs \
+        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
+        ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang
 fi

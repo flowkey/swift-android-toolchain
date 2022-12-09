@@ -41,7 +41,7 @@ build() {
     cmake --build ${BUILD_DIR} #--verbose
     echo finished build ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}
 
-    copyLibs()
+    copySwiftDependencyLibs
 
     echo "Finished compiling ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
 }
