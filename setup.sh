@@ -12,7 +12,7 @@ then
 fi
 
 readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
-readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
+readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.8.1-RELEASE.xctoolchain}"
 
 for LAST_ARGUMENT in $@; do :; done
 readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
@@ -20,7 +20,8 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
-readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/${ANDROID_ABI}"
+readonly SDK_DIRNAME=swift-android
+readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}"
 readonly HOST=darwin-x86_64 # TODO: add more platforms
 
 copySwiftDependencyLibs() {
@@ -65,8 +66,8 @@ fi
 
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
-    echo "Please install the swift-5.7-RELEASE toolchain (or set TOOLCHAIN_PATH)"
-    echo "On Mac: https://download.swift.org/swift-5.7-release/xcode/swift-5.7-RELEASE/swift-5.7-RELEASE-osx.pkg"
+    echo "Please install the swift-5.8.1-RELEASE toolchain (or set TOOLCHAIN_PATH)"
+    echo "On Mac: https://download.swift.org/swift-5.8.1-release/xcode/swift-5.8.1-RELEASE/swift-5.8.1-RELEASE-osx.pkg"
     exit 1
 fi
 
@@ -80,30 +81,23 @@ fi
 downloadSdks() {
     [ ! -d ${SDK_DIR} ] && mkdir -p ${SDK_DIR}
     pushd ${SDK_DIR} > /dev/null
+    
+    local ORIGINAL_FILENAME="swift-5.8-android-24-sdk"
 
-    for SDK in aarch64 armv7 x86_64
-    do
-        local SDK_DIRNAME=${SDK};
-        [ ${SDK} = "aarch64" ] && SDK_DIRNAME=arm64-v8a
-        [ ${SDK} = "armv7" ] && SDK_DIRNAME=armeabi-v7a
-
-        local ORIGINAL_FILENAME="swift-5.7-android-${SDK}-24-sdk"
-
-        if [ ! -f "${ORIGINAL_FILENAME}.tar.xz" ]
-        then
-            log "Downloading ${SDK_DIRNAME} SDK..."
-            local SDK_URL_BASEPATH="https://github.com/buttaface/swift-android-sdk/releases/download/5.7"
-            curl -LO ${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}.tar.xz
-        fi
-        
-        if [ ! -d "${SDK_DIRNAME}" ]
-        then
-            log "Extracting ${SDK_DIRNAME} SDK..."
-            tar --extract --file ${ORIGINAL_FILENAME}.tar.xz
-            # rm ${ORIGINAL_FILENAME}.tar.xz
-            mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
-        fi
-    done
+    if [ ! -f "${ORIGINAL_FILENAME}.tar.xz" ]
+    then
+        log "Downloading ${SDK_DIRNAME} SDK..."
+        local SDK_URL_BASEPATH="https://github.com/buttaface/swift-android-sdk/releases/download/5.8"
+        curl -LO ${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}.tar.xz
+    fi
+    
+    if [ ! -d "${SDK_DIRNAME}" ]
+    then
+        log "Extracting ${SDK_DIRNAME} SDK..."
+        tar --extract --file ${ORIGINAL_FILENAME}.tar.xz
+        # rm ${ORIGINAL_FILENAME}.tar.xz
+        mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
+    fi
 
     popd > /dev/null
 }
@@ -111,17 +105,17 @@ downloadSdks() {
 downloadSdks
 
 # dynamic resources
-if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang" ]
+if [ ! -f "${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift/clang" ]
 then
     ln -fs \
         ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
-        ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang
+        ${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift/clang
 fi
 
 # static resources
-if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang" ]
+if [ ! -f "${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift_static/clang" ]
 then
     ln -fs \
         ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
-        ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang
+        ${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift_static/clang
 fi

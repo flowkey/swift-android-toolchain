@@ -34,6 +34,7 @@ endif()
 
 # Make a list that we then convert to a (space-delimited) string, below
 set(SWIFT_FLAGS
+    -L${SWIFT_SDK}/usr/lib/${ANDROID_TOOLCHAIN_NAME}
     -g # always produce debug symbols
     -sdk ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/sysroot
     -resource-dir ${SWIFT_SDK}/usr/lib/swift

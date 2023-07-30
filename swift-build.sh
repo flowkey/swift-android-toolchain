@@ -8,7 +8,7 @@ source "${SCRIPT_ROOT}/setup.sh"
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
     echo "Please install the swift-5.7-RELEASE toolchain (or set TOOLCHAIN_PATH)"
-    echo "On Mac: https://download.swift.org/swift-5.7-release/xcode/swift-5.7-RELEASE/swift-5.7-RELEASE-osx.pkg"
+    echo "On Mac: https://download.swift.org/swift-5.8.1-release/xcode/swift-5.8.1-RELEASE/swift-5.8.1-RELEASE-osx.pkg"
     exit 1
 fi
 
