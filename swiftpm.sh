@@ -5,6 +5,7 @@ set -e
 readonly SCRIPT_ROOT=$(cd $(dirname $0); echo -n $PWD) # path of this file
 source "${SCRIPT_ROOT}/setup.sh"
 
+# readonly SDK_DIRNAME=swift-android
 readonly BUILD_TYPE=${BUILD_TYPE:-release}
 readonly SCRATCH_PATH="swiftpm-build"
 
@@ -23,11 +24,17 @@ do
 done
 
 if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
+    ANDROID_ARCH="armv7"
     TARGET_TRIPLE="armv7-unknown-linux-androideabi24"
+    TARGET_LIB_DIR="arm-linux-androideabi"
 elif [ ${ANDROID_ABI} = "x86_64" ]; then
+    ANDROID_ARCH="x86_64"
     TARGET_TRIPLE="x86_64-unknown-linux-android24"
+    TARGET_LIB_DIR="x86_64-linux-android"
 else # assume arm64
+    ANDROID_ARCH="aarch64"
     TARGET_TRIPLE="aarch64-unknown-linux-android24"
+    TARGET_LIB_DIR="aarch64-linux-android"
 fi
 
 if [ "${STATIC_SWIFT_STDLIB}" ]
@@ -48,9 +55,11 @@ cat <<- EOF > "${DESTINATION_FILE}"
     "sdk": "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/sysroot",
     "extra-cc-flags": ["-fPIC", "-DSTATIC_SWIFT_STDLIB"],
     "extra-swiftc-flags": [
+        "-L",
+        "${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift_static/android/${ANDROID_ARCH}",
         "-DSTATIC_SWIFT_STDLIB",
         "-resource-dir",
-        "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static",
+        "${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift_static",
         "-tools-directory",
         "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/bin"
     ],
@@ -66,8 +75,10 @@ cat <<- EOF > "${DESTINATION_FILE}"
     "sdk": "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/sysroot",
     "extra-cc-flags": ["-fPIC"],
     "extra-swiftc-flags": [
+        "-L",
+        "${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/${TARGET_LIB_DIR}",
         "-resource-dir",
-        "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift",
+        "${SCRIPT_ROOT}/sdk/${SDK_DIRNAME}/usr/lib/swift",
         "-tools-directory",
         "${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/bin"
     ],
@@ -76,6 +87,10 @@ cat <<- EOF > "${DESTINATION_FILE}"
 EOF
     fi
 fi
+
+${TOOLCHAIN_PATH}/usr/bin/swift package update \
+    --disable-index-store \
+    --scratch-path ${SCRATCH_PATH} 
 
 # --disable-index-store works around compiler crash in swift 5.7 toolchain:
 # adding a --scratch-path per ABI makes rebuilding faster
