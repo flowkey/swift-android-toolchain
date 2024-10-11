@@ -12,7 +12,7 @@ then
 fi
 
 readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
-readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
+readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.10-RELEASE.xctoolchain}"
 
 for LAST_ARGUMENT in $@; do :; done
 readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
@@ -65,8 +65,8 @@ fi
 
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
-    echo "Please install the swift-5.7-RELEASE toolchain (or set TOOLCHAIN_PATH)"
-    echo "On Mac: https://download.swift.org/swift-5.7-release/xcode/swift-5.7-RELEASE/swift-5.7-RELEASE-osx.pkg"
+    echo "Please install the swift-5.10-RELEASE toolchain (or set TOOLCHAIN_PATH)"
+    echo "On Mac: https://download.swift.org/swift-5.10-release/xcode/swift-5.10-RELEASE/swift-5.10-RELEASE-osx.pkg"
     exit 1
 fi
 
@@ -81,29 +81,15 @@ downloadSdks() {
     [ ! -d ${SDK_DIR} ] && mkdir -p ${SDK_DIR}
     pushd ${SDK_DIR} > /dev/null
 
-    for SDK in aarch64 armv7 x86_64
-    do
-        local SDK_DIRNAME=${SDK};
-        [ ${SDK} = "aarch64" ] && SDK_DIRNAME=arm64-v8a
-        [ ${SDK} = "armv7" ] && SDK_DIRNAME=armeabi-v7a
+    # download file which contains the SDKs for all platforms
+    log "Downloading common SDK..."
+    local SDK_URL_BASEPATH="https://github.com/buttaface/swift-android-sdk/releases/download/5.10"
+    local ANDROID_SDK_FILENAME="swift-5.10-android-24-sdk"
+    curl -LO ${SDK_URL_BASEPATH}/${ANDROID_SDK_FILENAME}.tar.xz
 
-        local ORIGINAL_FILENAME="swift-5.7-android-${SDK}-24-sdk"
-
-        if [ ! -f "${ORIGINAL_FILENAME}.tar.xz" ]
-        then
-            log "Downloading ${SDK_DIRNAME} SDK..."
-            local SDK_URL_BASEPATH="https://github.com/buttaface/swift-android-sdk/releases/download/5.7"
-            curl -LO ${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}.tar.xz
-        fi
-        
-        if [ ! -d "${SDK_DIRNAME}" ]
-        then
-            log "Extracting ${SDK_DIRNAME} SDK..."
-            tar --extract --file ${ORIGINAL_FILENAME}.tar.xz
-            # rm ${ORIGINAL_FILENAME}.tar.xz
-            mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
-        fi
-    done
+    # extract the downloaded file
+    log "Extracting common SDK..."
+    tar --extract --file ${ANDROID_SDK_FILENAME}.tar.xz
 
     popd > /dev/null
 }
