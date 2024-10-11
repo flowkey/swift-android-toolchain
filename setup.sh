@@ -90,6 +90,7 @@ downloadSdks() {
     # extract the downloaded file
     log "Extracting common SDK..."
     tar --extract --file ${ANDROID_SDK_FILENAME}.tar.xz
+    mv ${ANDROID_SDK_FILENAME} sdk
 
     popd > /dev/null
 }
