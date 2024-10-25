@@ -1,20 +1,20 @@
-ANDROID_NDK_PATH=/usr/local/ndk/25.1.8937393
+ANDROID_NDK_PATH=/usr/local/ndk/27.1.12297006
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
-    echo "no ndk found under /usr/local/ndk/25.1.8937393"
-    echo "download ndk 25.1.8937393 and create a symlink in '/usr/local/ndk/25.1.8937393' pointing to it"
+    echo "no ndk found under /usr/local/ndk/27.1.12297006"
+    echo "download ndk 27.1.12297006 and create a symlink in '/usr/local/ndk/27.1.12297006' pointing to it"
     exit 1
 fi
 
 if [[ ! ${ANDROID_ABI} ]]
 then
-    echo "ANDROID_ABI not set. Defaulting to 'arm64-v8a'"
-    ANDROID_ABI=arm64-v8a
+    echo "ANDROID_ABI not set. Defaulting to 'aarch64'"
+    ANDROID_ABI=aarch64
 fi
 
 : "${SCRIPT_ROOT:=$(cd "$(dirname "$0")"; pwd -P)}"
 
 readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
-readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
+readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-6.0.1-RELEASE.xctoolchain}"
 
 for LAST_ARGUMENT in $@; do :; done
 readonly PROJECT_DIRECTORY=${LAST_ARGUMENT:-$PWD}
@@ -67,8 +67,9 @@ fi
 
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
-    echo "Please install the swift-5.7-RELEASE toolchain (or set TOOLCHAIN_PATH)"
-    echo "On Mac: https://download.swift.org/swift-5.7-release/xcode/swift-5.7-RELEASE/swift-5.7-RELEASE-osx.pkg"
+    echo "Please install the swift-6.0.1-RELEASE toolchain (or set TOOLCHAIN_PATH)"
+    echo "On Mac: https://download.swift.org/swift-6.0.1-release/xcode/swift-6.0.1-RELEASE/swift-6.0.1-RELEASE-osx.pkg"
+    
     exit 1
 fi
 
@@ -83,29 +84,20 @@ downloadSdks() {
     [ ! -d ${SDK_DIR} ] && mkdir -p ${SDK_DIR}
     pushd ${SDK_DIR} > /dev/null
 
-    for SDK in aarch64 armv7 x86_64
-    do
-        local SDK_DIRNAME=${SDK};
-        [ ${SDK} = "aarch64" ] && SDK_DIRNAME=arm64-v8a
-        [ ${SDK} = "armv7" ] && SDK_DIRNAME=armeabi-v7a
+    local ORIGINAL_FILENAME="swift-6.0.1-RELEASE-android-24-0.1.artifactbundle"
+    local EXTENSION=".tar.gz"
 
-        local ORIGINAL_FILENAME="swift-5.7-android-${SDK}-24-sdk"
+    if [ ! -f "${ORIGINAL_FILENAME}${EXTENSION}" ]
+    then
+        local SDK_URL_BASEPATH="https://github.com/finagolfin/swift-android-sdk/releases/download/6.0.1"
+        local SDK_DOWNLOAD_URL="${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}${EXTENSION}"
+        curl -LO ${SDK_DOWNLOAD_URL}
+    fi
 
-        if [ ! -f "${ORIGINAL_FILENAME}.tar.xz" ]
-        then
-            log "Downloading ${SDK_DIRNAME} SDK..."
-            local SDK_URL_BASEPATH="https://github.com/buttaface/swift-android-sdk/releases/download/5.7"
-            curl -LO ${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}.tar.xz
-        fi
-        
-        if [ ! -d "${SDK_DIRNAME}" ]
-        then
-            log "Extracting ${SDK_DIRNAME} SDK..."
-            tar --extract --file ${ORIGINAL_FILENAME}.tar.xz
-            # rm ${ORIGINAL_FILENAME}.tar.xz
-            mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
-        fi
-    done
+    log "Extracting ${SDK_DIRNAME} SDK..."
+    tar --extract --file ${ORIGINAL_FILENAME}${EXTENSION}
+
+    # mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
 
     popd > /dev/null
 }
@@ -116,14 +108,14 @@ downloadSdks
 if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang" ]
 then
     ln -fs \
-        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
-        ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang
+        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib/clang/18/ \
+        ${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot/usr/lib/swift/clang
 fi
 
 # static resources
 if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang" ]
 then
     ln -fs \
-        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib64/clang/14.0.6 \
-        ${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang
+        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib/clang/18/ \
+        ${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot/usr/lib/swift_static-${ANDROID_ABI}/clang
 fi
