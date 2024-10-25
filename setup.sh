@@ -7,9 +7,33 @@ fi
 
 if [[ ! ${ANDROID_ABI} ]]
 then
-    echo "ANDROID_ABI not set. Defaulting to 'aarch64'"
-    ANDROID_ABI=aarch64
+    echo "ANDROID_ABI not set. Defaulting to 'arm64-v8a'"
+    ANDROID_ABI=arm64-v8a
 fi
+
+
+mapAbiToArchitecture() {
+    local ABI=$1
+    local ARCHITECTURE
+
+    case ${ABI} in
+        armeabi-v7a)
+            ARCHITECTURE=armv7
+            ;;
+        arm64-v8a)
+            ARCHITECTURE=aarch64
+            ;;
+        x86_64)
+            ARCHITECTURE=x86_64
+            ;;
+        *)
+            echo "Unknown architecture for ABI ${ABI}"
+            exit 1
+            ;;
+    esac
+
+    echo ${ARCHITECTURE}
+}
 
 : "${SCRIPT_ROOT:=$(cd "$(dirname "$0")"; pwd -P)}"
 
@@ -22,7 +46,9 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
-readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/${ANDROID_ABI}"
+readonly ARCHITECTURE=$(mapAbiToArchitecture ${ANDROID_ABI})
+readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot/"
+
 readonly HOST=darwin-x86_64 # TODO: add more platforms
 
 copySwiftDependencyLibs() {
@@ -105,17 +131,18 @@ downloadSdks() {
 downloadSdks
 
 # dynamic resources
-if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift/clang" ]
+if [ ! -f "${SWIFT_SDK_PATH}/usr/lib/swift/clang" ]
 then
+    # totally not sure about these paths
     ln -fs \
         ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib/clang/18/ \
-        ${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot/usr/lib/swift/clang
+        ${SWIFT_SDK_PATH}/usr/lib/swift/clang
 fi
 
 # static resources
-if [ ! -f "${SCRIPT_ROOT}/sdk/${ANDROID_ABI}/usr/lib/swift_static/clang" ]
+if [ ! -f "${SWIFT_SDK_PATH}/usr/lib/swift_static-${ARCHITECTURE}/clang" ]
 then
     ln -fs \
         ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib/clang/18/ \
-        ${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot/usr/lib/swift_static-${ANDROID_ABI}/clang
+        ${SWIFT_SDK_PATH}/usr/lib/swift_static-${ARCHITECTURE}/clang
 fi
