@@ -11,30 +11,6 @@ then
     ANDROID_ABI=arm64-v8a
 fi
 
-
-mapAbiToArchitecture() {
-    local ABI=$1
-    local ARCHITECTURE
-
-    case ${ABI} in
-        armeabi-v7a)
-            ARCHITECTURE=armv7
-            ;;
-        arm64-v8a)
-            ARCHITECTURE=aarch64
-            ;;
-        x86_64)
-            ARCHITECTURE=x86_64
-            ;;
-        *)
-            echo "Unknown architecture for ABI ${ABI}"
-            exit 1
-            ;;
-    esac
-
-    echo ${ARCHITECTURE}
-}
-
 : "${SCRIPT_ROOT:=$(cd "$(dirname "$0")"; pwd -P)}"
 
 readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
@@ -46,8 +22,7 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
-readonly ARCHITECTURE=$(mapAbiToArchitecture ${ANDROID_ABI})
-readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot/"
+readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.artifactbundle/swift-6.0.1-release-android-24-sdk/android-27b-sysroot"
 
 readonly HOST=darwin-x86_64 # TODO: add more platforms
 
@@ -110,39 +85,23 @@ downloadSdks() {
     [ ! -d ${SDK_DIR} ] && mkdir -p ${SDK_DIR}
     pushd ${SDK_DIR} > /dev/null
 
-    local ORIGINAL_FILENAME="swift-6.0.1-RELEASE-android-24-0.1.artifactbundle"
-    local EXTENSION=".tar.gz"
+    local ORIGINAL_FILENAME="swift-6.0.1-RELEASE-android-24-0.1.artifactbundle.tar.gz"
 
-    if [ ! -f "${ORIGINAL_FILENAME}${EXTENSION}" ]
+    if [ ! -f "${ORIGINAL_FILENAME}" ]
     then
+        log "Downloading ${SWIFT_SDK_PATH} SDK..."
         local SDK_URL_BASEPATH="https://github.com/finagolfin/swift-android-sdk/releases/download/6.0.1"
-        local SDK_DOWNLOAD_URL="${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}${EXTENSION}"
+        local SDK_DOWNLOAD_URL="${SDK_URL_BASEPATH}/${ORIGINAL_FILENAME}"
         curl -LO ${SDK_DOWNLOAD_URL}
     fi
 
-    log "Extracting ${SDK_DIRNAME} SDK..."
-    tar --extract --file ${ORIGINAL_FILENAME}${EXTENSION}
-
-    # mv ${ORIGINAL_FILENAME} ${SDK_DIRNAME}
+    if [ ! -d "${SWIFT_SDK_PATH}" ]
+    then
+        log "Extracting ${SWIFT_SDK_PATH} SDK..."
+        tar --extract --file ${ORIGINAL_FILENAME}
+    fi
 
     popd > /dev/null
 }
 
 downloadSdks
-
-# dynamic resources
-if [ ! -f "${SWIFT_SDK_PATH}/usr/lib/swift/clang" ]
-then
-    # totally not sure about these paths
-    ln -fs \
-        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib/clang/18/ \
-        ${SWIFT_SDK_PATH}/usr/lib/swift/clang
-fi
-
-# static resources
-if [ ! -f "${SWIFT_SDK_PATH}/usr/lib/swift_static-${ARCHITECTURE}/clang" ]
-then
-    ln -fs \
-        ${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/${HOST}/lib/clang/18/ \
-        ${SWIFT_SDK_PATH}/usr/lib/swift_static-${ARCHITECTURE}/clang
-fi

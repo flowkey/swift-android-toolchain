@@ -41,10 +41,10 @@ set(SWIFT_FLAGS
     # -v
 )
 
-file(CREATE_LINK
-    ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/lib64/clang/14.0.6
-    ${SWIFT_SDK}/usr/lib/swift/clang
-    SYMBOLIC)
+# file(CREATE_LINK
+#     ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/lib64/clang/14.0.6
+#     ${SWIFT_SDK}/usr/lib/swift/clang
+#     SYMBOLIC)
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
     list(APPEND SWIFT_FLAGS -O)
