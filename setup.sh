@@ -27,8 +27,11 @@ readonly SWIFT_SDK_PATH="${SCRIPT_ROOT}/sdk/swift-6.0.1-RELEASE-android-24-0.1.a
 readonly HOST=darwin-x86_64 # TODO: add more platforms
 
 copySwiftDependencyLibs() {
+    log "Copying Swift dependency libraries..."
+
     function copyLib {
         local DESTINATION="${LIBRARY_OUTPUT_DIRECTORY}/`basename "$1"`"
+        log "Copying $1 to ${DESTINATION}"
         if [ "$1" -nt "${DESTINATION}" ]
         then
             mkdir -p "${LIBRARY_OUTPUT_DIRECTORY}"
