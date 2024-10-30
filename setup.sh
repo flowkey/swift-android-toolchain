@@ -1,6 +1,6 @@
-ANDROID_NDK_PATH=/usr/local/ndk/27.1.12297006
+ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/27.1.12297006}"
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
-    echo "no ndk found under /usr/local/ndk/27.1.12297006"
+    echo "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
     echo "download ndk 27.1.12297006 and create a symlink in '/usr/local/ndk/27.1.12297006' pointing to it"
     exit 1
 fi

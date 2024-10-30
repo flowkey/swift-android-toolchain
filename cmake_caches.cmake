@@ -32,28 +32,15 @@ endif()
 
 ######################################################################
 
-message("SWIFT SDK: ${SWIFT_SDK}")
-
 # Make a list that we then convert to a (space-delimited) string, below
 set(SWIFT_FLAGS
-    # -L ${SWIFT_SDK}/usr/lib/${ANDROID_TOOLCHAIN_NAME}
+    -L "${SWIFT_SDK}/usr/lib/${ANDROID_TOOLCHAIN_NAME}/24"
     -g # always produce debug symbols
-    -sdk ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/sysroot
-    -resource-dir ${SWIFT_SDK}/usr/lib/swift
-    -tools-directory ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/bin
-    -v
+    -sdk "${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/sysroot"
+    -resource-dir "${SWIFT_SDK}/usr/lib/swift"
+    -tools-directory "${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/bin"
+    # -v
 )
-
-link_directories(${SWIFT_SDK}/usr/lib/${ANDROID_TOOLCHAIN_NAME}/24)
-
-message("\nSWIFT_FLAGS:")
-message("${SWIFT_FLAGS}")
-message("\n")
-
-# file(CREATE_LINK
-#     ${ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_HOST_TAG}/lib64/clang/14.0.6
-#     ${SWIFT_SDK}/usr/lib/swift/clang
-#     SYMBOLIC)
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
     list(APPEND SWIFT_FLAGS -O)
