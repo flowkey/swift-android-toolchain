@@ -7,8 +7,6 @@ source "${SCRIPT_ROOT}/setup.sh"
 
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
-    echo "SDK: ${SWIFT_SDK_PATH}"
-    echo "Toolchain: ${TOOLCHAIN_PATH}"
 
     cmake \
         -G Ninja \
@@ -29,8 +27,6 @@ configure() {
 }
 
 build() {
-    echo "Building ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
-
     # reconfigure when build dir does not exist
     [[ -d ${BUILD_DIR} ]] || configure
 
