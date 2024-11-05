@@ -8,6 +8,7 @@ source "${SCRIPT_ROOT}/setup.sh"
 configure() {
     echo "Configure ${CMAKE_BUILD_TYPE} for ${ANDROID_ABI}"
     echo "SDK: ${SWIFT_SDK_PATH}"
+    echo "Toolchain: ${TOOLCHAIN_PATH}"
 
     cmake \
         -G Ninja \

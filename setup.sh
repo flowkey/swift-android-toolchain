@@ -1,13 +1,13 @@
 ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/27.1.12297006}"
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
-    echo "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
-    echo "download ndk 27.1.12297006 and create a symlink in '/usr/local/ndk/27.1.12297006' pointing to it"
+    log "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
+    log "download ndk 27.1.12297006 and create a symlink in '/usr/local/ndk/27.1.12297006' pointing to it"
     exit 1
 fi
 
 if [[ ! ${ANDROID_ABI} ]]
 then
-    echo "ANDROID_ABI not set. Defaulting to 'arm64-v8a'"
+    log "ANDROID_ABI not set. Defaulting to 'arm64-v8a'"
     ANDROID_ABI=arm64-v8a
 fi
 
@@ -31,7 +31,8 @@ copySwiftDependencyLibs() {
 
     function copyLib {
         local DESTINATION="${LIBRARY_OUTPUT_DIRECTORY}/`basename "$1"`"
-        log "Copying $1 to ${DESTINATION}"
+        local LIB_NAME=`basename "$1"`
+        log "Copying ${LIB_NAME}"
         if [ "$1" -nt "${DESTINATION}" ]
         then
             mkdir -p "${LIBRARY_OUTPUT_DIRECTORY}"
@@ -39,7 +40,15 @@ copySwiftDependencyLibs() {
         fi
     }
 
-    local LIB_FILES=`find "${SWIFT_SDK_PATH}/usr/lib" -type f -iname "*.so" -print`
+    if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
+        TARGET_LIB_DIR="arm-linux-androideabi"
+    elif [ ${ANDROID_ABI} = "x86_64" ]; then
+        TARGET_LIB_DIR="x86_64-linux-android"
+    else
+        TARGET_LIB_DIR="aarch64-linux-android"
+    fi
+
+    local LIB_FILES=`find "${SWIFT_SDK_PATH}/usr/lib/${TARGET_LIB_DIR}/24" -type f -iname "*.so" -print`
 
     # EXCLUDED_LIBS are optionally provided to script, e.g. from Gradle:
     if [ ${#EXCLUDED_LIBS} != "0" ]
@@ -71,16 +80,16 @@ fi
 
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
-    echo "Please install the swift-6.0.1-RELEASE toolchain (or set TOOLCHAIN_PATH)"
-    echo "On Mac: https://download.swift.org/swift-6.0.1-release/xcode/swift-6.0.1-RELEASE/swift-6.0.1-RELEASE-osx.pkg"
+    log "Please install the swift-6.0.1-RELEASE toolchain (or set TOOLCHAIN_PATH)"
+    log "On Mac: https://download.swift.org/swift-6.0.1-release/xcode/swift-6.0.1-RELEASE/swift-6.0.1-RELEASE-osx.pkg"
     
     exit 1
 fi
 
 if [[ ! -f "${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract" ]];
 then
-    echo "Missing symlink '${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract'."
-    echo "We need 'sudo' permission to create it (just this once)."
+    log "Missing symlink '${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract'."
+    log "We need 'sudo' permission to create it (just this once)."
     sudo ln -s swift ${TOOLCHAIN_PATH}/usr/bin/swift-autolink-extract || exit 1
 fi
 
