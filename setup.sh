@@ -11,6 +11,8 @@ then
     ANDROID_ABI=arm64-v8a
 fi
 
+: "${SCRIPT_ROOT:=$(cd "$(dirname "$0")"; pwd -P)}"
+
 readonly SDK_DIR="${SCRIPT_ROOT}/sdk"
 readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-5.7-RELEASE.xctoolchain}"
 
