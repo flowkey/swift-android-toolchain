@@ -2,10 +2,11 @@ log() {
     echo "[swift-android-toolchain] $*"
 }
 
-ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/27.1.12297006}"
+readonly NDK_VERSION="27.1.12297006"
+readonly ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/${NDK_VERSION}}"
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
     log "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
-    log "download ndk 27.1.12297006 and create a symlink in '/usr/local/ndk/27.1.12297006' pointing to it"
+    log "download ndk ${NDK_VERSION} and create a symlink in '/usr/local/ndk/${NDK_VERSION}' pointing to it"
     exit 1
 fi
 
