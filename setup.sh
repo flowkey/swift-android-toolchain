@@ -1,3 +1,7 @@
+log() {
+    echo "[swift-android-toolchain] $*"
+}
+
 ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/27.1.12297006}"
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
     log "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
@@ -63,9 +67,6 @@ copySwiftDependencyLibs() {
     copyLib "${ANDROID_NDK_PATH}/sources/cxx-stl/llvm-libc++/libs/${ANDROID_ABI}/libc++_shared.so"
 }
 
-log() {
-    echo "[swift-android-toolchain] $*"
-}
 
 clean() {
     rm -rf ${SDK_DIR}
