@@ -3,7 +3,7 @@ log() {
 }
 
 readonly SWIFT_VERSION="6.0.2"
-readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-${SWIFT_VERSION}-RELEASE.xctoolchain}"
+readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-~/Library/Developer/Toolchains/swift-${SWIFT_VERSION}-RELEASE.xctoolchain}"
 if [ ! -d ${TOOLCHAIN_PATH} ]
 then
     log "Please install the swift-${SWIFT_VERSION}-RELEASE toolchain (or set TOOLCHAIN_PATH)"
