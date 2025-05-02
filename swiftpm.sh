@@ -27,9 +27,8 @@ then
 fi
 
 function swiftBuild {
-    ${TOOLCHAIN_PATH}/usr/bin/swift build \
+    swiftly run swift build \
         --swift-sdk ${TARGET_TRIPLE} \
-        --toolchain ${TOOLCHAIN_PATH} \
         --scratch-path ${SCRATCH_PATH} \
         -c ${BUILD_TYPE} \
         -Xcc -fPIC \

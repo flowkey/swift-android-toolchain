@@ -2,21 +2,12 @@ log() {
     echo "[swift-android-toolchain] $*"
 }
 
-readonly SWIFT_VERSION="6.0.2"
-readonly TOOLCHAIN_PATH="${TOOLCHAIN_PATH:-/Library/Developer/Toolchains/swift-${SWIFT_VERSION}-RELEASE.xctoolchain}"
-if [ ! -d ${TOOLCHAIN_PATH} ]
-then
-    log "Please install the swift-${SWIFT_VERSION}-RELEASE toolchain (or set TOOLCHAIN_PATH)"
-    log "On Mac: https://download.swift.org/swift-${SWIFT_VERSION}-release/xcode/swift-${SWIFT_VERSION}-RELEASE/swift-6.0.2-RELEASE-osx.pkg"
-
-    exit 1
-fi
-
+readonly SWIFT_VERSION="6.1"
 readonly SWIFT_ANDROID_SDK="swift-${SWIFT_VERSION}-RELEASE-android-24-0.1"
-readonly SWIFT_ANDROID_SDK_CHECKSUM="d75615eac3e614131133c7cc2076b0b8fb4327d89dce802c25cd53e75e1881f4"
+readonly SWIFT_ANDROID_SDK_CHECKSUM="971f3b1fd03c059803d625f0a412d7e8c4c6f34440f5216ceaf13e886e8e706f"
 if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
 then
-    swift sdk install \
+    swiftly run swift sdk install \
         https://github.com/finagolfin/swift-android-sdk/releases/download/${SWIFT_VERSION}/${SWIFT_ANDROID_SDK}.artifactbundle.tar.gz \
         --checksum ${SWIFT_ANDROID_SDK_CHECKSUM}
 fi
