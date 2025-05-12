@@ -5,6 +5,9 @@ log() {
 readonly SWIFT_VERSION="6.1"
 readonly SWIFT_ANDROID_SDK="swift-${SWIFT_VERSION}-RELEASE-android-24-0.1"
 readonly SWIFT_ANDROID_SDK_CHECKSUM="971f3b1fd03c059803d625f0a412d7e8c4c6f34440f5216ceaf13e886e8e706f"
+
+swiftly install ${SWIFT_VERSION}
+
 if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
 then
     swiftly run swift sdk install \
