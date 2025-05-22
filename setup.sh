@@ -57,7 +57,10 @@ copySwiftDependencyLibs() {
         TARGET_LIB_DIR="aarch64-linux-android"
     fi
 
-    local LIB_FILES=`find "${SWIFT_SDK_PATH}/usr/lib/${TARGET_LIB_DIR}/24" -type f -iname "*.so" -print`
+    local LIB_FILES=(
+        $(find "${SWIFT_SDK_PATH}/usr/lib/${TARGET_LIB_DIR}/24" -type f -iname "*.so")
+        $(find "${SWIFT_SDK_PATH}/usr/lib/${TARGET_LIB_DIR}" -maxdepth 1 -type f -iname "*.so")
+    )
 
     # EXCLUDED_LIBS are optionally provided to script, e.g. from Gradle:
     # Check if EXCLUDED_LIBS is set; if not, initialize it as an empty array.
@@ -71,7 +74,7 @@ copySwiftDependencyLibs() {
     if [ ${#EXCLUDED_LIBS} != "0" ]
     then
         local EXCLUSIONS_STRING=`for EXCLUSION in ${EXCLUDED_LIBS}; do printf %s "-e ${EXCLUSION} "; done`
-        LIB_FILES=$(grep --invert-match ${EXCLUSIONS_STRING} <<< "$LIB_FILES")
+        LIB_FILES=($(printf '%s\n' "${LIB_FILES[@]}" | grep --invert-match -i $EXCLUSIONS_STRING))
     fi
 
     for FILE_PATH in ${LIB_FILES[@]}
