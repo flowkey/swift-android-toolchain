@@ -2,9 +2,9 @@ log() {
     echo "[swift-android-toolchain] $*"
 }
 
-readonly SWIFT_VERSION="6.1"
-readonly SWIFT_ANDROID_SDK="swift-${SWIFT_VERSION}-RELEASE-android-24-0.1"
-readonly SWIFT_ANDROID_SDK_CHECKSUM="971f3b1fd03c059803d625f0a412d7e8c4c6f34440f5216ceaf13e886e8e706f"
+readonly SWIFT_VERSION="6.2"
+readonly SWIFT_ANDROID_SDK="swift-6.2-RELEASE-android-24-0.1"
+readonly SWIFT_ANDROID_SDK_CHECKSUM="c26ebfd4e32c0ca1beabcc45729b62042da57ee76d7d043f63f2235da90dc491"
 
 swiftly install ${SWIFT_VERSION}
 
@@ -35,7 +35,7 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
-readonly SWIFT_SDK_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle/swift-${SWIFT_VERSION}-release-android-24-sdk/android-27c-sysroot"
+readonly SWIFT_SDK_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle/swift-${SWIFT_VERSION}-release-android-24-sdk/android-27d-sysroot"
 
 copySwiftDependencyLibs() {
     log "Copying Swift dependencies..."
