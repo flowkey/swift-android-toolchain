@@ -58,7 +58,6 @@ copySwiftDependencyLibs() {
     fi
 
     local LIB_FILES=(
-        $(find "${SWIFT_SDK_PATH}/usr/lib/${TARGET_LIB_DIR}/24" -type f -iname "*.so")
         $(find "${SWIFT_SDK_PATH}/usr/lib/${TARGET_LIB_DIR}" -maxdepth 1 -type f -iname "*.so")
     )
 
