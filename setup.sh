@@ -2,7 +2,7 @@ log() {
     echo "[swift-android-toolchain] $*"
 }
 
-readonly SWIFT_VERSION="6.2"
+readonly SWIFT_VERSION="6.2.0"
 readonly SWIFT_ANDROID_SDK="swift-6.2-RELEASE-android-24-0.1"
 readonly SWIFT_ANDROID_SDK_CHECKSUM="c26ebfd4e32c0ca1beabcc45729b62042da57ee76d7d043f63f2235da90dc491"
 
@@ -11,7 +11,7 @@ swiftly install ${SWIFT_VERSION}
 if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
 then
     swiftly run swift sdk install \
-        https://github.com/finagolfin/swift-android-sdk/releases/download/${SWIFT_VERSION}/${SWIFT_ANDROID_SDK}.artifactbundle.tar.gz \
+        https://github.com/finagolfin/swift-android-sdk/releases/download/6.2/${SWIFT_ANDROID_SDK}.artifactbundle.tar.gz \
         --checksum ${SWIFT_ANDROID_SDK_CHECKSUM}
 fi
 
