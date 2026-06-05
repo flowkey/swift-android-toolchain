@@ -31,7 +31,7 @@ readonly TOOLCHAIN_PATH=$(swiftly run which swiftc +${SWIFT_VERSION} | xargs dir
 function swiftBuild {
     unset ANDROID_NDK_HOME
     swiftly run swift build \
-        --swift-sdk ${SWIFT_ANDROID_SDK} +${SWIFT_VERSION} \
+        --swift-sdk ${TARGET_TRIPLE} +${SWIFT_VERSION} \
         --scratch-path ${SCRATCH_PATH} \
         -c ${BUILD_TYPE} \
         -Xcc -fPIC \

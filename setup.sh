@@ -25,6 +25,12 @@ readonly SWIFT_SDK_BUNDLE_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${S
 
 if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
 then
+    # Remove any old Android SDKs to avoid ambiguous triple resolution
+    for old_sdk in $(swift sdk list | grep -i android | grep -v ${SWIFT_ANDROID_SDK}); do
+        log "Removing old Android SDK: ${old_sdk}"
+        swiftly run swift sdk remove ${old_sdk} +${SWIFT_VERSION} || true
+    done
+
     swiftly run swift sdk install \
         https://download.swift.org/swift-${SWIFT_VERSION}-release/android-sdk/swift-${SWIFT_VERSION}-RELEASE/${SWIFT_ANDROID_SDK}.artifactbundle.tar.gz \
         --checksum ${SWIFT_ANDROID_SDK_CHECKSUM}
