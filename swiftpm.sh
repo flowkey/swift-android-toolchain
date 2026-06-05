@@ -9,7 +9,7 @@ readonly SCRATCH_PATH="swiftpm-build"
 readonly BUILD_TYPE=${BUILD_TYPE:-release}
 
 if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
-    TARGET_TRIPLE="armv7-unknown-linux-androideabi30"
+    TARGET_TRIPLE="armv7-unknown-linux-android30"
 elif [ ${ANDROID_ABI} = "x86_64" ]; then
     TARGET_TRIPLE="x86_64-unknown-linux-android30"
 else # assume arm64
