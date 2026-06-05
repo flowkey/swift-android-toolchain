@@ -93,4 +93,15 @@ copySwiftDependencyLibs() {
     do
         copyLib "${FILE_PATH}"
     done
+
+    # libc++_shared.so comes from the NDK, not the Swift SDK
+    if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
+        local NDK_LIB_DIR="arm-linux-androideabi"
+    elif [ ${ANDROID_ABI} = "x86_64" ]; then
+        local NDK_LIB_DIR="x86_64-linux-android"
+    else
+        local NDK_LIB_DIR="aarch64-linux-android"
+    fi
+    local NDK_SYSROOT="${ANDROID_NDK_PATH}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/${NDK_LIB_DIR}"
+    copyLib ${NDK_SYSROOT}/libc++_shared.so
 }
