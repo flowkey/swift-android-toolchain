@@ -9,11 +9,11 @@ readonly SCRATCH_PATH="swiftpm-build"
 readonly BUILD_TYPE=${BUILD_TYPE:-release}
 
 if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
-    TARGET_TRIPLE="armv7-unknown-linux-androideabi28"
+    TARGET_TRIPLE="armv7-unknown-linux-androideabi30"
 elif [ ${ANDROID_ABI} = "x86_64" ]; then
-    TARGET_TRIPLE="x86_64-unknown-linux-android28"
+    TARGET_TRIPLE="x86_64-unknown-linux-android30"
 else # assume arm64
-    TARGET_TRIPLE="aarch64-unknown-linux-android28"
+    TARGET_TRIPLE="aarch64-unknown-linux-android30"
 fi
 
 if [ -f ${SCRATCH_PATH}/${ANDROID_ABI}-${BUILD_TYPE}.yaml ]
@@ -26,6 +26,8 @@ then
     cp -f ${SCRATCH_PATH}/${ANDROID_ABI}-${BUILD_TYPE}.db ${SCRATCH_PATH}/build.db
 fi
 
+readonly TOOLCHAIN_PATH=$(swiftly run which swiftc +${SWIFT_VERSION} | xargs dirname | xargs dirname | xargs dirname)
+
 function swiftBuild {
     unset ANDROID_NDK_HOME
     swiftly run swift build \
@@ -33,6 +35,8 @@ function swiftBuild {
         --scratch-path ${SCRATCH_PATH} \
         -c ${BUILD_TYPE} \
         -Xcc -fPIC \
+        -Xcc -I${TOOLCHAIN_PATH}/usr/include \
+        -Xcxx -I${TOOLCHAIN_PATH}/usr/include \
         $@
 }
 

@@ -3,23 +3,15 @@ log() {
 }
 
 readonly SWIFT_MAJOR_VERSION=6
-readonly SWIFT_MINOR_VERSION=2
+readonly SWIFT_MINOR_VERSION=3
 readonly SWIFT_PATCH_VERSION=2
 
 readonly SWIFT_VERSION="${SWIFT_MAJOR_VERSION}.${SWIFT_MINOR_VERSION}.${SWIFT_PATCH_VERSION}"
-readonly SWIFT_VERSION_CONCISE="${SWIFT_MAJOR_VERSION}.${SWIFT_MINOR_VERSION}"
 
-readonly SWIFT_ANDROID_SDK="swift-${SWIFT_VERSION_CONCISE}-RELEASE-android-24-0.1"
-readonly SWIFT_ANDROID_SDK_CHECKSUM="c26ebfd4e32c0ca1beabcc45729b62042da57ee76d7d043f63f2235da90dc491"
+readonly SWIFT_ANDROID_SDK="swift-${SWIFT_VERSION}-RELEASE_android"
+readonly SWIFT_ANDROID_SDK_CHECKSUM="939e933549d12d28f2e0bf71019d734d309859e9773c572657ce565a81f85d68"
 
 swiftly install "${SWIFT_VERSION}"
-
-if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
-then
-    swiftly run swift sdk install \
-        https://github.com/finagolfin/swift-android-sdk/releases/download/${SWIFT_VERSION_CONCISE}/${SWIFT_ANDROID_SDK}.artifactbundle.tar.gz \
-        --checksum ${SWIFT_ANDROID_SDK_CHECKSUM}
-fi
 
 readonly NDK_VERSION="27.1.12297006"
 readonly ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/${NDK_VERSION}}"
@@ -27,6 +19,21 @@ if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
     log "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
     log "download ndk ${NDK_VERSION} and create a symlink in '/usr/local/ndk/${NDK_VERSION}' pointing to it"
     exit 1
+fi
+
+readonly SWIFT_SDK_BUNDLE_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle"
+
+if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
+then
+    swiftly run swift sdk install \
+        https://download.swift.org/swift-${SWIFT_VERSION}-release/android-sdk/swift-${SWIFT_VERSION}-RELEASE/${SWIFT_ANDROID_SDK}.artifactbundle.tar.gz \
+        --checksum ${SWIFT_ANDROID_SDK_CHECKSUM}
+fi
+
+if [ ! -d "${SWIFT_SDK_BUNDLE_PATH}/swift-android/ndk-sysroot/usr/include" ]
+then
+    log "Setting up Android NDK sysroot in SDK bundle..."
+    ANDROID_NDK_HOME="${ANDROID_NDK_PATH}" "${SWIFT_SDK_BUNDLE_PATH}/swift-android/scripts/setup-android-sdk.sh"
 fi
 
 if [[ ! ${ANDROID_ABI} ]]
@@ -41,7 +48,7 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
-readonly SWIFT_SDK_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle/swift-${SWIFT_VERSION_CONCISE}-release-android-24-sdk/android-27d-sysroot"
+readonly SWIFT_SDK_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle/swift-android/swift-resources"
 
 copySwiftDependencyLibs() {
     log "Copying Swift dependencies..."
@@ -56,11 +63,11 @@ copySwiftDependencyLibs() {
     }
 
     if [ ${ANDROID_ABI} = "armeabi-v7a" ]; then
-        TARGET_LIB_DIR="arm-linux-androideabi"
+        TARGET_LIB_DIR="swift-armv7/android"
     elif [ ${ANDROID_ABI} = "x86_64" ]; then
-        TARGET_LIB_DIR="x86_64-linux-android"
+        TARGET_LIB_DIR="swift-x86_64/android"
     else
-        TARGET_LIB_DIR="aarch64-linux-android"
+        TARGET_LIB_DIR="swift-aarch64/android"
     fi
 
     local LIB_FILES=(
