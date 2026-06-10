@@ -52,6 +52,14 @@ readonly SWIFT_SDK_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_AN
 
 copySwiftDependencyLibs() {
     log "Copying Swift dependencies..."
+
+    # Start from a clean slate: this directory must contain EXACTLY the current
+    # toolchain's runtime libs plus the built products — never an accumulation of
+    # past builds. Stale accumulation made APKs unreproducible across machines
+    # (a lib present locally but missing on CI crashed Firebase test runs with
+    # UnsatisfiedLinkError, and long-excluded libs kept shipping from old copies).
+    rm -f "${LIBRARY_OUTPUT_DIRECTORY}"/*.so
+
     function copyLib {
         local DESTINATION="${LIBRARY_OUTPUT_DIRECTORY}/`basename "$1"`"
         # log "${DESTINATION}"
