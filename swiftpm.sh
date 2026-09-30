@@ -29,9 +29,10 @@ fi
 readonly TOOLCHAIN_PATH=$(swiftly run which swiftc +${SWIFT_VERSION} | xargs dirname | xargs dirname | xargs dirname)
 
 function swiftBuild {
-    unset ANDROID_NDK_HOME
+    # SwiftPM locates the NDK itself when building for an Android Swift SDK, and fails without it.
+    export ANDROID_NDK_HOME="${ANDROID_NDK_PATH}"
     swiftly run swift build \
-        --swift-sdk ${TARGET_TRIPLE} +${SWIFT_VERSION} \
+        --swift-sdk ${SWIFT_ANDROID_SDK} --triple ${TARGET_TRIPLE} +${SWIFT_VERSION} \
         --scratch-path ${SCRATCH_PATH} \
         -c ${BUILD_TYPE} \
         -Xcc -fPIC \
