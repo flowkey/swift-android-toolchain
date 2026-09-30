@@ -3,17 +3,17 @@ log() {
 }
 
 readonly SWIFT_MAJOR_VERSION=6
-readonly SWIFT_MINOR_VERSION=3
-readonly SWIFT_PATCH_VERSION=2
+readonly SWIFT_MINOR_VERSION=4
+readonly SWIFT_PATCH_VERSION=0
 
 readonly SWIFT_VERSION="${SWIFT_MAJOR_VERSION}.${SWIFT_MINOR_VERSION}.${SWIFT_PATCH_VERSION}"
 
 readonly SWIFT_ANDROID_SDK="swift-${SWIFT_VERSION}-RELEASE_android"
-readonly SWIFT_ANDROID_SDK_CHECKSUM="939e933549d12d28f2e0bf71019d734d309859e9773c572657ce565a81f85d68"
+readonly SWIFT_ANDROID_SDK_CHECKSUM="21fb555122a3d801ad943d48df7ebffdd8824de61c25c180bb792d3edaee0b43"
 
 swiftly install "${SWIFT_VERSION}"
 
-readonly NDK_VERSION="27.1.12297006"
+readonly NDK_VERSION="30.0.16248370"
 readonly ANDROID_NDK_PATH="${ANDROID_NDK_PATH:-/usr/local/ndk/${NDK_VERSION}}"
 if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
     log "no ndk found under ANDROID_NDK_PATH=${ANDROID_NDK_PATH}"
@@ -30,7 +30,9 @@ then
         --checksum ${SWIFT_ANDROID_SDK_CHECKSUM}
 fi
 
-if [ ! -d "${SWIFT_SDK_BUNDLE_PATH}/swift-android/ndk-sysroot/usr/include" ]
+# The sysroot links into one NDK, so it is set up again whenever that is not the NDK pinned above.
+readonly NDK_SYSROOT_INCLUDE="${SWIFT_SDK_BUNDLE_PATH}/swift-android/ndk-sysroot/usr/include"
+if [ ! -d "${NDK_SYSROOT_INCLUDE}" ] || [[ "$(readlink "${NDK_SYSROOT_INCLUDE}")" != "${ANDROID_NDK_PATH}"/* ]]
 then
     log "Setting up Android NDK sysroot in SDK bundle..."
     ANDROID_NDK_HOME="${ANDROID_NDK_PATH}" "${SWIFT_SDK_BUNDLE_PATH}/swift-android/scripts/setup-android-sdk.sh"
