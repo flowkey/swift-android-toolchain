@@ -43,9 +43,17 @@ function swiftBuild {
 
 swiftBuild $@
 
-# Speed up subsequent incremental builds
-cp -f ${SCRATCH_PATH}/${BUILD_TYPE}.yaml ${SCRATCH_PATH}/${ANDROID_ABI}-${BUILD_TYPE}.yaml
-cp -f ${SCRATCH_PATH}/build.db ${SCRATCH_PATH}/${ANDROID_ABI}-${BUILD_TYPE}.db
+# Speed up subsequent incremental builds. Only the native build system writes these; swiftbuild, the
+# default from Swift 6.4, keeps each triple's state apart on its own.
+if [ -f ${SCRATCH_PATH}/${BUILD_TYPE}.yaml ]
+then
+    cp -f ${SCRATCH_PATH}/${BUILD_TYPE}.yaml ${SCRATCH_PATH}/${ANDROID_ABI}-${BUILD_TYPE}.yaml
+fi
+
+if [ -f ${SCRATCH_PATH}/build.db ]
+then
+    cp -f ${SCRATCH_PATH}/build.db ${SCRATCH_PATH}/${ANDROID_ABI}-${BUILD_TYPE}.db
+fi
 
 if [ "$LIBRARY_OUTPUT_DIRECTORY" ]
 then
