@@ -21,7 +21,13 @@ if [[ ! `cat "${ANDROID_NDK_PATH}/CHANGELOG.md" 2> /dev/null` ]]; then
     exit 1
 fi
 
-readonly SWIFT_SDK_BUNDLE_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle"
+# Where `swift sdk install` puts Swift SDKs by default
+if [[ "$(uname)" == "Darwin" ]]; then
+    readonly SWIFT_SDKS_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks"
+else
+    readonly SWIFT_SDKS_PATH="${HOME}/.swiftpm/swift-sdks"
+fi
+readonly SWIFT_SDK_BUNDLE_PATH="${SWIFT_SDKS_PATH}/${SWIFT_ANDROID_SDK}.artifactbundle"
 
 if [ ! $(swift sdk list | grep ${SWIFT_ANDROID_SDK}) ]
 then
@@ -50,7 +56,7 @@ readonly BUILD_DIR="${PROJECT_DIRECTORY}/build/${ANDROID_ABI}"
 readonly LIBRARY_OUTPUT_DIRECTORY="${LIBRARY_OUTPUT_DIRECTORY:-${PROJECT_DIRECTORY}/libs/${ANDROID_ABI}}"
 readonly CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-"Debug"}
 
-readonly SWIFT_SDK_PATH="${HOME}/Library/org.swift.swiftpm/swift-sdks/${SWIFT_ANDROID_SDK}.artifactbundle/swift-android/swift-resources"
+readonly SWIFT_SDK_PATH="${SWIFT_SDK_BUNDLE_PATH}/swift-android/swift-resources"
 
 copySwiftDependencyLibs() {
     log "Copying Swift dependencies..."
